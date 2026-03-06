@@ -6,7 +6,7 @@
 <title>Brain Dump</title>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=Space+Mono:wght@400;700&display=swap');
-:root{--bg:#0f0f0f;--surface:#161616;--surface2:#1c1c1c;--border:#272727;--text:#e8e4dc;--muted:#555;--arbejde:#c8a96e;--ideer:#6eb5c8;--personlig:#8ec87a;--todo:#c87a8e}
+:root{--bg:#0f0f0f;--surface:#161616;--surface2:#1c1c1c;--border:#272727;--text:#e8e4dc;--muted:#555;--arbejde:#c8a96e;--ideer:#6eb5c8;--personlig:#8ec87a;--todo:#c87a8e;--prio-high:#e05555;--prio-med:#e0a955;--prio-low:#6b6b6b}
 *{box-sizing:border-box;margin:0;padding:0}
 body{background:var(--bg);color:var(--text);font-family:'Space Mono',monospace;min-height:100vh;padding:20px;max-width:1200px;margin:0 auto}
 #setup-screen{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;gap:24px;text-align:center}
@@ -29,6 +29,12 @@ h1{font-family:'Syne',sans-serif;font-weight:800;font-size:1.4rem;letter-spacing
 .dump-input::placeholder{color:var(--muted)}
 .dump-submit{background:var(--text);color:var(--bg);border:none;font-family:'Syne',sans-serif;font-weight:700;font-size:.75rem;padding:13px 20px;border-radius:4px;cursor:pointer;white-space:nowrap}
 .dump-submit:disabled{opacity:.5;cursor:not-allowed}
+.prio-bar{display:flex;gap:6px;margin-bottom:14px;align-items:center}
+.prio-bar span{font-size:.6rem;color:var(--muted);margin-right:4px}
+.prio-btn{background:none;border:1px solid var(--border);color:var(--muted);font-family:'Space Mono',monospace;font-size:.62rem;padding:4px 10px;border-radius:3px;cursor:pointer;transition:all .15s}
+.prio-btn.active-high{border-color:var(--prio-high);color:var(--prio-high);background:#2a1010}
+.prio-btn.active-med{border-color:var(--prio-med);color:var(--prio-med);background:#2a2010}
+.prio-btn.active-low{border-color:var(--muted);color:var(--muted);background:#1a1a1a}
 .status-bar{font-size:.63rem;color:var(--muted);min-height:22px;padding:3px 0 14px}
 .status-bar.ok{color:var(--personlig)}.status-bar.err{color:var(--todo)}.status-bar.info{color:var(--ideer)}
 .grid{display:grid;grid-template-columns:repeat(2,1fr);gap:14px}
@@ -42,21 +48,33 @@ h1{font-family:'Syne',sans-serif;font-weight:800;font-size:1.4rem;letter-spacing
 .card-emoji{font-size:1rem}
 .card-title{font-family:'Syne',sans-serif;font-weight:700;font-size:.8rem;letter-spacing:.08em;text-transform:uppercase;flex:1}
 .card-count{font-size:.6rem;color:var(--muted);background:var(--border);padding:2px 6px;border-radius:2px}
-.entries{flex:1;overflow-y:auto;min-height:120px;max-height:300px}
+.entries{flex:1;overflow-y:auto;min-height:120px;max-height:320px}
 .entries::-webkit-scrollbar{width:2px}.entries::-webkit-scrollbar-thumb{background:var(--border)}
-.entry{padding:9px 14px;display:flex;align-items:flex-start;gap:9px;border-bottom:1px solid #1a1a1a}
+.entry{padding:9px 14px;display:flex;align-items:flex-start;gap:9px;border-bottom:1px solid #1a1a1a;position:relative}
 .entry:last-child{border-bottom:none}.entry:hover{background:var(--surface2)}
-.entry.done{opacity:.38}.entry.done .entry-text{text-decoration:line-through}
+.entry.done{opacity:.35}.entry.done .entry-text{text-decoration:line-through}
+.entry.prio-high{border-left:2px solid var(--prio-high)}
+.entry.prio-med{border-left:2px solid var(--prio-med)}
 .check{width:13px;height:13px;border:1px solid var(--border);border-radius:2px;flex-shrink:0;margin-top:3px;display:flex;align-items:center;justify-content:center;font-size:8px;cursor:pointer;user-select:none}
 .entry.done .check{background:var(--muted);border-color:var(--muted);color:var(--bg)}
+.prio-dot{width:6px;height:6px;border-radius:50%;flex-shrink:0;margin-top:5px}
+.prio-dot.high{background:var(--prio-high)}
+.prio-dot.med{background:var(--prio-med)}
+.prio-dot.low{background:transparent}
 .entry-body{flex:1;min-width:0}
 .entry-meta{font-size:.58rem;color:var(--muted);margin-bottom:2px;display:flex;flex-wrap:wrap;gap:3px;align-items:center}
 .tag{font-size:.56rem;padding:1px 4px;border-radius:2px}
 .arbejde .tag{background:#251f10;color:var(--arbejde)}.ideer .tag{background:#101e24;color:var(--ideer)}.personlig .tag{background:#121f0f;color:var(--personlig)}.todo .tag{background:#24101a;color:var(--todo)}
+.prio-label{font-size:.52rem;padding:1px 5px;border-radius:2px;font-weight:700;letter-spacing:.05em}
+.prio-label.high{background:#2a1010;color:var(--prio-high)}
+.prio-label.med{background:#2a2010;color:var(--prio-med)}
 .entry-text{font-size:.72rem;line-height:1.55;color:var(--text);word-break:break-word}
-.add-row{padding:8px 10px;border-top:1px solid var(--border);display:flex;gap:6px;flex-shrink:0}
+.add-row{padding:8px 10px;border-top:1px solid var(--border);display:flex;gap:6px;flex-shrink:0;align-items:center}
 .add-input{flex:1;background:transparent;border:none;color:var(--text);font-family:'Space Mono',monospace;font-size:.68rem;outline:none}
 .add-input::placeholder{color:#383838}
+.add-prio{background:none;border:1px solid var(--border);color:var(--muted);font-family:'Space Mono',monospace;font-size:.58rem;padding:2px 6px;border-radius:2px;cursor:pointer}
+.add-prio.h{border-color:var(--prio-high);color:var(--prio-high)}
+.add-prio.m{border-color:var(--prio-med);color:var(--prio-med)}
 .add-go{background:none;border:1px solid var(--border);color:var(--muted);font-family:'Space Mono',monospace;font-size:.6rem;padding:2px 7px;border-radius:2px;cursor:pointer}
 .loading-overlay{position:fixed;inset:0;background:rgba(15,15,15,.85);display:none;flex-direction:column;align-items:center;justify-content:center;gap:16px;z-index:100;font-size:.75rem;color:var(--muted)}
 .spinner{width:28px;height:28px;border:2px solid var(--border);border-top-color:var(--text);border-radius:50%;animation:spin .8s linear infinite}
@@ -71,7 +89,7 @@ h1{font-family:'Syne',sans-serif;font-weight:800;font-size:1.4rem;letter-spacing
 <input type="password" id="api-key-input" placeholder="sk-ant-api03-..." autocomplete="off">
 <button class="btn-primary" onclick="saveAndStart()">Forbind</button>
 </div>
-<p style="font-size:.6rem">Forlader aldrig din enhed - localStorage</p>
+<p style="font-size:.6rem">Forlader aldrig din enhed</p>
 </div>
 <div id="app">
 <div class="loading-overlay" id="loading"><div class="spinner"></div><span id="loading-msg">Henter noter...</span></div>
@@ -80,40 +98,56 @@ h1{font-family:'Syne',sans-serif;font-weight:800;font-size:1.4rem;letter-spacing
 <div class="header-right"><span class="clock" id="clock"></span><button class="sync-btn" onclick="logout()" style="color:#444">log ud</button></div>
 </header>
 <div class="dump-bar">
-<input class="dump-input" id="quick-input" placeholder="dump en tanke... #ide #projekt #todo #laer #ring - Enter" onkeydown="if(event.key==='Enter')quickDump()">
+<input class="dump-input" id="quick-input" placeholder="dump en tanke... #ide #projekt #todo  !hoj  !!middel - Enter" onkeydown="if(event.key==='Enter')quickDump()">
 <button class="dump-submit" id="dump-btn" onclick="quickDump()">GEM</button>
+</div>
+<div class="prio-bar">
+<span>prioritet:</span>
+<button class="prio-btn" id="pb-low" onclick="setPrio('low')">ingen</button>
+<button class="prio-btn" id="pb-med" onclick="setPrio('med')">!! middel</button>
+<button class="prio-btn" id="pb-high" onclick="setPrio('high')">!!! hoj</button>
 </div>
 <div class="status-bar" id="status"></div>
 <div class="grid">
 <div class="card arbejde">
 <div class="card-header"><span class="card-emoji">&#x1F4BC;</span><span class="card-title">Arbejde</span><span class="card-count" id="cnt-arbejde">-</span></div>
 <div class="entries" id="list-arbejde"></div>
-<div class="add-row"><input class="add-input" placeholder="+ tilfoej direkte..." id="in-arbejde" onkeydown="if(event.key==='Enter')addDirect('arbejde')"><button class="add-go" onclick="addDirect('arbejde')">+</button></div>
+<div class="add-row">
+<input class="add-input" placeholder="+ tilfoej..." id="in-arbejde" onkeydown="if(event.key==='Enter')addDirect('arbejde')">
+<button class="add-prio" id="ap-arbejde" onclick="cycleAddPrio('arbejde')">-</button>
+<button class="add-go" onclick="addDirect('arbejde')">+</button>
+</div>
 </div>
 <div class="card ideer">
 <div class="card-header"><span class="card-emoji">&#x1F4A1;</span><span class="card-title">Ideer</span><span class="card-count" id="cnt-ideer">-</span></div>
 <div class="entries" id="list-ideer"></div>
-<div class="add-row"><input class="add-input" placeholder="+ tilfoej direkte..." id="in-ideer" onkeydown="if(event.key==='Enter')addDirect('ideer')"><button class="add-go" onclick="addDirect('ideer')">+</button></div>
+<div class="add-row">
+<input class="add-input" placeholder="+ tilfoej..." id="in-ideer" onkeydown="if(event.key==='Enter')addDirect('ideer')">
+<button class="add-prio" id="ap-ideer" onclick="cycleAddPrio('ideer')">-</button>
+<button class="add-go" onclick="addDirect('ideer')">+</button>
+</div>
 </div>
 <div class="card personlig">
 <div class="card-header"><span class="card-emoji">&#x1F331;</span><span class="card-title">Personlig</span><span class="card-count" id="cnt-personlig">-</span></div>
 <div class="entries" id="list-personlig"></div>
-<div class="add-row"><input class="add-input" placeholder="+ tilfoej direkte..." id="in-personlig" onkeydown="if(event.key==='Enter')addDirect('personlig')"><button class="add-go" onclick="addDirect('personlig')">+</button></div>
+<div class="add-row">
+<input class="add-input" placeholder="+ tilfoej..." id="in-personlig" onkeydown="if(event.key==='Enter')addDirect('personlig')">
+<button class="add-prio" id="ap-personlig" onclick="cycleAddPrio('personlig')">-</button>
+<button class="add-go" onclick="addDirect('personlig')">+</button>
+</div>
 </div>
 <div class="card todo">
 <div class="card-header"><span class="card-emoji">&#x2705;</span><span class="card-title">To-do</span><span class="card-count" id="cnt-todo">-</span></div>
 <div class="entries" id="list-todo"></div>
-<div class="add-row"><input class="add-input" placeholder="+ tilfoej direkte..." id="in-todo" onkeydown="if(event.key==='Enter')addDirect('todo')"><button class="add-go" onclick="addDirect('todo')">+</button></div>
+<div class="add-row">
+<input class="add-input" placeholder="+ tilfoej..." id="in-todo" onkeydown="if(event.key==='Enter')addDirect('todo')">
+<button class="add-prio" id="ap-todo" onclick="cycleAddPrio('todo')">-</button>
+<button class="add-go" onclick="addDirect('todo')">+</button>
+</div>
 </div>
 </div>
 </div>
 <script>
-var NOTE_NAMES = {
-  arbejde: 'BD Arbejde',
-  ideer: 'BD Ideer',
-  personlig: 'BD Personlig',
-  todo: 'BD Todo'
-};
 var NOTE_FULL = {
   arbejde: '🧠 BD — 💼 Arbejde Projekter · Opgaver · Møder · Kunder Tags: #projekt…',
   ideer: '🧠 BD — 💡 Idéer Idéer · Produkter · Koncepter · Kreativt Tags: #idé…',
@@ -127,28 +161,44 @@ var TAG_MAP = {
   '#todo':'todo','#kob':'todo','#ring':'todo','#tjek':'todo'
 };
 var entries = {arbejde:[],ideer:[],personlig:[],todo:[]};
+var currentPrio = 'low';
+var addPrios = {arbejde:'low',ideer:'low',personlig:'low',todo:'low'};
 
 function getKey() { return localStorage.getItem('bd_apikey'); }
-
 function saveAndStart() {
   var v = document.getElementById('api-key-input').value.trim();
   if (!v.startsWith('sk-ant-')) { alert('Noeglen skal starte med sk-ant-'); return; }
   localStorage.setItem('bd_apikey', v);
   startApp();
 }
-
 function logout() { localStorage.removeItem('bd_apikey'); location.reload(); }
-
 window.addEventListener('DOMContentLoaded', function() {
-  updateClock();
-  setInterval(updateClock, 15000);
+  updateClock(); setInterval(updateClock, 15000);
+  setPrio('low');
   if (getKey()) startApp();
 });
-
 function startApp() {
   document.getElementById('setup-screen').style.display = 'none';
   document.getElementById('app').style.display = 'block';
   syncAll();
+}
+
+function setPrio(p) {
+  currentPrio = p;
+  ['low','med','high'].forEach(function(x) {
+    var btn = document.getElementById('pb-' + x);
+    btn.className = 'prio-btn' + (x === p ? ' active-' + x : '');
+  });
+}
+
+function cycleAddPrio(key) {
+  var cycle = ['low','med','high'];
+  var cur = addPrios[key] || 'low';
+  var next = cycle[(cycle.indexOf(cur) + 1) % cycle.length];
+  addPrios[key] = next;
+  var btn = document.getElementById('ap-' + key);
+  btn.textContent = next === 'high' ? '!!!' : next === 'med' ? '!!' : '-';
+  btn.className = 'add-prio' + (next === 'high' ? ' h' : next === 'med' ? ' m' : '');
 }
 
 function callClaude(sys, msg) {
@@ -169,9 +219,13 @@ function callClaude(sys, msg) {
   }).then(function(r) {
     if (!r.ok) return r.json().then(function(e) { throw new Error(e.error ? e.error.message : r.status); });
     return r.json();
-  }).then(function(d) {
-    return d.content[0].text;
-  });
+  }).then(function(d) { return d.content[0].text; });
+}
+
+function parsePrio(text) {
+  if (text.indexOf('!!!') >= 0 || text.indexOf('!hoj') >= 0) return 'high';
+  if (text.indexOf('!!') >= 0 || text.indexOf('!middel') >= 0) return 'med';
+  return 'low';
 }
 
 function parseNote(raw) {
@@ -183,10 +237,18 @@ function parseNote(raw) {
     if (!m) continue;
     var date = m[1];
     var rest = m[2];
+    var prio = 'low';
+    if (rest.indexOf('[!!!]') >= 0 || rest.indexOf('[HIGH]') >= 0) prio = 'high';
+    else if (rest.indexOf('[!!]') >= 0 || rest.indexOf('[MED]') >= 0) prio = 'med';
     var tags = rest.match(/#[\w]+/gi) || [];
-    var text = rest.replace(/#[\w]+/gi, '').replace(/^[\s\-]+/, '').trim();
-    if (text) res.push({date:date, tags:tags, text:text, done:false});
+    var text = rest.replace(/#[\w]+/gi,'').replace(/\[!!!\]|\[!!\]|\[HIGH\]|\[MED\]/g,'').replace(/^[\s\-]+/,'').trim();
+    if (text) res.push({date:date, tags:tags, text:text, done:false, prio:prio});
   }
+  // sort: high first, then med, then low
+  res.sort(function(a,b) {
+    var order = {high:0, med:1, low:2};
+    return order[a.prio] - order[b.prio];
+  });
   return res;
 }
 
@@ -196,24 +258,14 @@ function syncAll() {
   var keys = ['arbejde','ideer','personlig','todo'];
   var i = 0;
   function next() {
-    if (i >= keys.length) {
-      renderAll();
-      setStatus('Synkroniseret', 'ok');
-      hideLoading();
-      return;
-    }
+    if (i >= keys.length) { renderAll(); setStatus('Synkroniseret', 'ok'); hideLoading(); return; }
     var k = keys[i++];
     setLoadingMsg('Henter ' + k + '...');
     callClaude(
-      'Du er et datahentningsvaerktoej. Brug get_note_content til at hente Apple Note med navn: "' + NOTE_FULL[k] + '". Returner KUN det raa tekstindhold af noten - ingen forklaringer.',
-      'Hent indholdet af noten: ' + NOTE_FULL[k]
-    ).then(function(raw) {
-      entries[k] = parseNote(raw);
-      next();
-    }).catch(function(e) {
-      console.warn('sync fejl ' + k + ':', e);
-      next();
-    });
+      'Du er et datahentningsvaerktoej. Brug get_note_content til at hente Apple Note: "' + NOTE_FULL[k] + '". Returner KUN det raa tekstindhold.',
+      'Hent: ' + NOTE_FULL[k]
+    ).then(function(raw) { entries[k] = parseNote(raw); next(); })
+    .catch(function(e) { console.warn(k, e); next(); });
   }
   next();
 }
@@ -223,43 +275,39 @@ function quickDump() {
   var text = inp.value.trim();
   if (!text) return;
   setBusy(true);
+  var prio = parsePrio(text);
+  if (prio === 'low') prio = currentPrio;
   var rawTags = (text.match(/#[\w]+/gi) || []).map(function(t){ return t.toLowerCase(); });
-  var clean = text.replace(/#[\w]+/gi,'').trim() || text;
+  var clean = text.replace(/#[\w]+/gi,'').replace(/!!!|!!|!hoj|!middel/gi,'').trim() || text;
   var targets = [];
   rawTags.forEach(function(t){ if (TAG_MAP[t] && targets.indexOf(TAG_MAP[t]) < 0) targets.push(TAG_MAP[t]); });
   if (targets.length === 0) {
     setStatus('Taenker...', 'info');
     callClaude(
-      'Du er en router. Kategorier: arbejde, ideer, personlig, todo. Returner KUN kommasepareret liste uden mellemrum.',
-      'Hvilke kategorier passer til: "' + text + '"'
+      'Router. Kategorier: arbejde,ideer,personlig,todo. KUN kommasepareret liste.',
+      'Kategorier for: "' + clean + '"'
     ).then(function(d) {
-      d.split(',').forEach(function(s) {
-        var k = s.trim().toLowerCase();
-        if (entries[k] !== undefined && targets.indexOf(k) < 0) targets.push(k);
-      });
-      doSave(targets, rawTags, clean, inp);
-    }).catch(function() {
-      doSave(['arbejde','ideer','personlig','todo'], rawTags, clean, inp);
-    });
+      var t2 = [];
+      d.split(',').forEach(function(s) { var k=s.trim().toLowerCase(); if(entries[k]!==undefined && t2.indexOf(k)<0) t2.push(k); });
+      doSave(t2.length ? t2 : ['arbejde','ideer','personlig','todo'], rawTags, clean, prio, inp);
+    }).catch(function() { doSave(['arbejde','ideer','personlig','todo'], rawTags, clean, prio, inp); });
   } else {
-    doSave(targets, rawTags, clean, inp);
+    doSave(targets, rawTags, clean, prio, inp);
   }
 }
 
-function doSave(targets, rawTags, clean, inp) {
+function doSave(targets, rawTags, clean, prio, inp) {
   var now = new Date();
   var date = now.getDate() + '/' + (now.getMonth()+1) + ' ' + pad(now.getHours()) + ':' + pad(now.getMinutes());
   var saved = 0;
+  if (targets.length === 0) { setBusy(false); return; }
   targets.forEach(function(k) {
-    entries[k].push({date:date, tags:rawTags, text:clean, done:false});
+    entries[k].push({date:date, tags:rawTags, text:clean, done:false, prio:prio});
+    entries[k].sort(function(a,b){ var o={high:0,med:1,low:2}; return o[a.prio]-o[b.prio]; });
     renderCard(k);
-    appendToNote(k, date, rawTags, clean).then(function() {
+    appendToNote(k, date, rawTags, clean, prio).then(function() {
       saved++;
-      if (saved === targets.length) {
-        inp.value = '';
-        setStatus('Gemt i ' + targets.map(capitalise).join(' + '), 'ok');
-        setBusy(false);
-      }
+      if (saved === targets.length) { inp.value=''; setStatus('Gemt i '+targets.map(capitalise).join(' + '),'ok'); setBusy(false); }
     });
   });
 }
@@ -269,31 +317,31 @@ function addDirect(key) {
   var text = inp.value.trim();
   if (!text) return;
   setBusy(true);
+  var prio = addPrios[key] || 'low';
   var now = new Date();
   var date = now.getDate() + '/' + (now.getMonth()+1) + ' ' + pad(now.getHours()) + ':' + pad(now.getMinutes());
   var rawTags = (text.match(/#[\w]+/gi) || []);
   var clean = text.replace(/#[\w]+/gi,'').trim() || text;
-  entries[key].push({date:date, tags:rawTags, text:clean, done:false});
-  renderCard(key);
-  inp.value = '';
-  appendToNote(key, date, rawTags, clean).then(function() {
-    setStatus('Tilfojet til ' + capitalise(key), 'ok');
+  entries[key].push({date:date, tags:rawTags, text:clean, done:false, prio:prio});
+  entries[key].sort(function(a,b){ var o={high:0,med:1,low:2}; return o[a.prio]-o[b.prio]; });
+  renderCard(key); inp.value = '';
+  appendToNote(key, date, rawTags, clean, prio).then(function() {
+    setStatus('Tilfojet til ' + capitalise(key) + (prio !== 'low' ? ' [' + prio + ']' : ''), 'ok');
     setBusy(false);
   });
 }
 
-function appendToNote(key, date, tags, text) {
+function appendToNote(key, date, tags, text, prio) {
   var ts = tags.join(' ');
-  var line = '[ ' + date + ' ] ' + ts + (ts ? ' - ' : '') + text;
+  var prioTag = prio === 'high' ? ' [!!!]' : prio === 'med' ? ' [!!]' : '';
+  var line = '[ ' + date + ' ]' + prioTag + ' ' + ts + (ts ? ' - ' : '') + text;
   return callClaude(
-    'Du er Apple Notes editor. Tilfoej denne linje i bunden af noten "' + NOTE_FULL[key] + '": ' + line + '. Returner kun OK.',
-    'Tilfoej linjen.'
+    'Apple Notes editor. Tilfoej denne linje i bunden af "' + NOTE_FULL[key] + '": ' + line + '. Returner kun OK.',
+    'Tilfoej.'
   ).catch(function(e){ console.warn('append fejl:', e); });
 }
 
-function renderAll() {
-  ['arbejde','ideer','personlig','todo'].forEach(renderCard);
-}
+function renderAll() { ['arbejde','ideer','personlig','todo'].forEach(renderCard); }
 
 function renderCard(key) {
   var list = document.getElementById('list-' + key);
@@ -304,10 +352,14 @@ function renderCard(key) {
     return;
   }
   list.innerHTML = entries[key].map(function(e, i) {
-    return '<div class="entry ' + (e.done?'done':'') + '">' +
+    var prioClass = e.prio !== 'low' ? ' prio-' + e.prio : '';
+    var dotClass = e.prio;
+    var prioLbl = e.prio === 'high' ? '<span class="prio-label high">HOJ</span>' : e.prio === 'med' ? '<span class="prio-label med">MIDDEL</span>' : '';
+    return '<div class="entry' + prioClass + (e.done?' done':'') + '">' +
       '<div class="check" onclick="toggle('' + key + '',' + i + ')">' + (e.done?'v':'') + '</div>' +
+      '<div class="prio-dot ' + dotClass + '"></div>' +
       '<div class="entry-body">' +
-        '<div class="entry-meta"><span>' + e.date + '</span>' +
+        '<div class="entry-meta"><span>' + e.date + '</span>' + prioLbl +
           e.tags.map(function(t){ return '<span class="tag">' + t + '</span>'; }).join('') +
         '</div>' +
         '<div class="entry-text">' + e.text + '</div>' +
@@ -315,34 +367,15 @@ function renderCard(key) {
   }).join('');
 }
 
-function toggle(key, i) {
-  entries[key][i].done = !entries[key][i].done;
-  renderCard(key);
-}
-
+function toggle(key, i) { entries[key][i].done = !entries[key][i].done; renderCard(key); }
 function pad(n){ return String(n).padStart(2,'0'); }
-function capitalise(s){ return s.charAt(0).toUpperCase() + s.slice(1); }
-
-function setStatus(msg, type) {
-  var el = document.getElementById('status');
-  el.textContent = msg;
-  el.className = 'status-bar ' + (type || '');
-  if (type === 'ok') setTimeout(function(){ el.textContent=''; el.className='status-bar'; }, 4000);
-}
-
-function showLoading(msg) {
-  document.getElementById('loading').style.display = 'flex';
-  document.getElementById('loading-msg').textContent = msg;
-}
-function setLoadingMsg(msg){ document.getElementById('loading-msg').textContent = msg; }
-function hideLoading(){ document.getElementById('loading').style.display = 'none'; }
-function setBusy(b){ document.getElementById('dump-btn').disabled = b; document.getElementById('quick-input').disabled = b; }
-
-function updateClock() {
-  var d = new Date();
-  var days = ['son','man','tirs','ons','tors','fre','lor'];
-  document.getElementById('clock').textContent = days[d.getDay()] + ' ' + d.getDate() + '/' + (d.getMonth()+1) + ' ' + pad(d.getHours()) + ':' + pad(d.getMinutes());
-}
+function capitalise(s){ return s.charAt(0).toUpperCase()+s.slice(1); }
+function setStatus(msg,type){ var el=document.getElementById('status'); el.textContent=msg; el.className='status-bar '+(type||''); if(type==='ok') setTimeout(function(){ el.textContent=''; el.className='status-bar'; },4000); }
+function showLoading(msg){ document.getElementById('loading').style.display='flex'; document.getElementById('loading-msg').textContent=msg; }
+function setLoadingMsg(msg){ document.getElementById('loading-msg').textContent=msg; }
+function hideLoading(){ document.getElementById('loading').style.display='none'; }
+function setBusy(b){ document.getElementById('dump-btn').disabled=b; document.getElementById('quick-input').disabled=b; }
+function updateClock(){ var d=new Date(); var days=['son','man','tirs','ons','tors','fre','lor']; document.getElementById('clock').textContent=days[d.getDay()]+' '+d.getDate()+'/'+(d.getMonth()+1)+' '+pad(d.getHours())+':'+pad(d.getMinutes()); }
 </script>
 </body>
 </html>
