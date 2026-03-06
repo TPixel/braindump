@@ -10,263 +10,274 @@
 *{box-sizing:border-box;margin:0;padding:0}
 body{background:var(--bg);color:var(--text);font-family:'Space Mono',monospace;min-height:100vh;padding:20px;max-width:1200px;margin:0 auto}
 header{display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;padding-bottom:16px;border-bottom:1px solid var(--border)}
-.header-left{display:flex;align-items:baseline;gap:14px}
 h1{font-family:'Syne',sans-serif;font-weight:800;font-size:1.4rem;letter-spacing:-.02em}
-.sync-btn{background:none;border:1px solid var(--border);color:var(--muted);font-family:'Space Mono',monospace;font-size:.62rem;padding:4px 10px;border-radius:3px;cursor:pointer}
-.header-right{display:flex;align-items:center;gap:12px}
+.ryd-btn{background:none;border:1px solid var(--border);color:var(--muted);font-family:'Space Mono',monospace;font-size:.62rem;padding:4px 10px;border-radius:3px;cursor:pointer}
 .clock{font-size:.65rem;color:var(--muted)}
 .dump-bar{display:flex;gap:10px;margin-bottom:8px}
 .dump-input{flex:1;background:var(--surface);border:1px solid var(--border);color:var(--text);font-family:'Space Mono',monospace;font-size:.8rem;padding:13px 16px;border-radius:4px;outline:none}
 .dump-input::placeholder{color:var(--muted)}
-.dump-submit{background:var(--text);color:var(--bg);border:none;font-family:'Syne',sans-serif;font-weight:700;font-size:.75rem;padding:13px 20px;border-radius:4px;cursor:pointer;white-space:nowrap}
+.dump-submit{background:var(--text);color:var(--bg);border:none;font-family:'Syne',sans-serif;font-weight:700;font-size:.75rem;padding:13px 20px;border-radius:4px;cursor:pointer}
 .prio-bar{display:flex;gap:6px;margin-bottom:14px;align-items:center}
 .prio-bar span{font-size:.6rem;color:var(--muted);margin-right:4px}
 .prio-btn{background:none;border:1px solid var(--border);color:var(--muted);font-family:'Space Mono',monospace;font-size:.62rem;padding:4px 10px;border-radius:3px;cursor:pointer}
 .prio-btn.sel-low{border-color:var(--muted);color:var(--text);background:#222}
 .prio-btn.sel-med{border-color:var(--prio-med);color:var(--prio-med);background:#2a2010}
 .prio-btn.sel-high{border-color:var(--prio-high);color:var(--prio-high);background:#2a1010}
-.status-bar{font-size:.63rem;color:var(--muted);min-height:20px;padding:2px 0 12px}
-.status-bar.ok{color:var(--personlig)}.status-bar.err{color:var(--todo)}
+.status{font-size:.63rem;color:var(--muted);min-height:20px;padding:2px 0 12px}
+.status.ok{color:var(--personlig)}.status.err{color:var(--todo)}
 .grid{display:grid;grid-template-columns:repeat(2,1fr);gap:14px}
 @media(max-width:680px){.grid{grid-template-columns:1fr}body{padding:12px}}
 .card{background:var(--surface);border:1px solid var(--border);border-radius:4px;display:flex;flex-direction:column}
-.card-header{padding:12px 14px;display:flex;align-items:center;gap:9px;border-bottom:1px solid var(--border);flex-shrink:0}
-.card.arbejde .card-header{border-left:3px solid var(--arbejde)}
-.card.ideer .card-header{border-left:3px solid var(--ideer)}
-.card.personlig .card-header{border-left:3px solid var(--personlig)}
-.card.todo .card-header{border-left:3px solid var(--todo)}
-.card-emoji{font-size:1rem}
+.card-head{padding:12px 14px;display:flex;align-items:center;gap:9px;border-bottom:1px solid var(--border)}
+.card.arbejde .card-head{border-left:3px solid var(--arbejde)}
+.card.ideer .card-head{border-left:3px solid var(--ideer)}
+.card.personlig .card-head{border-left:3px solid var(--personlig)}
+.card.todo .card-head{border-left:3px solid var(--todo)}
 .card-title{font-family:'Syne',sans-serif;font-weight:700;font-size:.8rem;letter-spacing:.08em;text-transform:uppercase;flex:1}
-.card-count{font-size:.6rem;color:var(--muted);background:var(--border);padding:2px 6px;border-radius:2px}
-.entries{flex:1;overflow-y:auto;min-height:100px;max-height:340px}
+.cnt{font-size:.6rem;color:var(--muted);background:var(--border);padding:2px 6px;border-radius:2px}
+.entries{flex:1;overflow-y:auto;min-height:80px;max-height:320px}
 .entries::-webkit-scrollbar{width:2px}.entries::-webkit-scrollbar-thumb{background:var(--border)}
-.entry{padding:9px 14px;display:flex;align-items:flex-start;gap:9px;border-bottom:1px solid #1a1a1a;cursor:default}
-.entry:last-child{border-bottom:none}.entry:hover{background:var(--surface2)}
-.entry.done .entry-text{text-decoration:line-through;opacity:.4}
+.entry{padding:9px 14px;display:flex;align-items:flex-start;gap:9px;border-bottom:1px solid #1a1a1a}
+.entry:hover{background:var(--surface2)}
+.entry.done .etxt{text-decoration:line-through;opacity:.4}
 .entry.prio-high{border-left:2px solid var(--prio-high)}
 .entry.prio-med{border-left:2px solid var(--prio-med)}
-.check{width:14px;height:14px;border:1px solid var(--border);border-radius:2px;flex-shrink:0;margin-top:2px;display:flex;align-items:center;justify-content:center;font-size:9px;cursor:pointer;user-select:none}
-.entry.done .check{background:var(--muted);border-color:var(--muted);color:var(--bg)}
-.prio-dot{width:5px;height:5px;border-radius:50%;flex-shrink:0;margin-top:5px}
-.prio-dot.high{background:var(--prio-high)}.prio-dot.med{background:var(--prio-med)}.prio-dot.low{background:transparent}
-.entry-body{flex:1;min-width:0}
-.entry-meta{font-size:.56rem;color:var(--muted);margin-bottom:2px;display:flex;flex-wrap:wrap;gap:3px}
-.prio-label{font-size:.52rem;padding:1px 4px;border-radius:2px;font-weight:700}
-.prio-label.high{background:#2a1010;color:var(--prio-high)}.prio-label.med{background:#2a2010;color:var(--prio-med)}
-.tag{font-size:.54rem;padding:1px 4px;border-radius:2px}
-.arbejde .tag{background:#251f10;color:var(--arbejde)}.ideer .tag{background:#101e24;color:var(--ideer)}.personlig .tag{background:#121f0f;color:var(--personlig)}.todo .tag{background:#24101a;color:var(--todo)}
-.entry-text{font-size:.72rem;line-height:1.5;word-break:break-word}
-.del-btn{background:none;border:none;color:#333;font-size:.7rem;cursor:pointer;padding:0 2px;margin-left:auto;flex-shrink:0;line-height:1;opacity:0}
-.entry:hover .del-btn{opacity:1}
-.add-row{padding:8px 10px;border-top:1px solid var(--border);display:flex;gap:6px;flex-shrink:0;align-items:center}
-.add-input{flex:1;background:transparent;border:none;color:var(--text);font-family:'Space Mono',monospace;font-size:.68rem;outline:none}
-.add-input::placeholder{color:#383838}
-.add-prio{background:none;border:1px solid var(--border);color:var(--muted);font-family:'Space Mono',monospace;font-size:.58rem;padding:2px 6px;border-radius:2px;cursor:pointer;min-width:28px}
-.add-prio.m{border-color:var(--prio-med);color:var(--prio-med)}.add-prio.h{border-color:var(--prio-high);color:var(--prio-high)}
-.add-go{background:none;border:1px solid var(--border);color:var(--muted);font-family:'Space Mono',monospace;font-size:.6rem;padding:2px 8px;border-radius:2px;cursor:pointer}
-@keyframes spin{to{transform:rotate(360deg)}}
+.chk{width:14px;height:14px;border:1px solid var(--border);border-radius:2px;flex-shrink:0;margin-top:2px;display:flex;align-items:center;justify-content:center;font-size:9px;cursor:pointer;user-select:none}
+.entry.done .chk{background:var(--muted);border-color:var(--muted);color:var(--bg)}
+.pdot{width:5px;height:5px;border-radius:50%;flex-shrink:0;margin-top:5px}
+.pdot.high{background:var(--prio-high)}.pdot.med{background:var(--prio-med)}.pdot.low{background:transparent}
+.ebody{flex:1;min-width:0}
+.emeta{font-size:.56rem;color:var(--muted);margin-bottom:2px;display:flex;flex-wrap:wrap;gap:3px}
+.plbl{font-size:.52rem;padding:1px 4px;border-radius:2px;font-weight:700}
+.plbl.high{background:#2a1010;color:var(--prio-high)}.plbl.med{background:#2a2010;color:var(--prio-med)}
+.etag{font-size:.54rem;padding:1px 4px;border-radius:2px}
+.card.arbejde .etag{background:#251f10;color:var(--arbejde)}
+.card.ideer .etag{background:#101e24;color:var(--ideer)}
+.card.personlig .etag{background:#121f0f;color:var(--personlig)}
+.card.todo .etag{background:#24101a;color:var(--todo)}
+.etxt{font-size:.72rem;line-height:1.5;word-break:break-word}
+.dbtn{background:none;border:none;color:#333;font-size:.7rem;cursor:pointer;padding:0 2px;margin-left:auto;flex-shrink:0;opacity:0}
+.entry:hover .dbtn{opacity:1}
+.add-row{padding:8px 10px;border-top:1px solid var(--border);display:flex;gap:6px;flex-shrink:0}
+.add-inp{flex:1;background:transparent;border:none;color:var(--text);font-family:'Space Mono',monospace;font-size:.68rem;outline:none}
+.add-inp::placeholder{color:#383838}
+.apbtn{background:none;border:1px solid var(--border);color:var(--muted);font-family:'Space Mono',monospace;font-size:.58rem;padding:2px 6px;border-radius:2px;cursor:pointer;min-width:28px}
+.apbtn.m{border-color:var(--prio-med);color:var(--prio-med)}.apbtn.h{border-color:var(--prio-high);color:var(--prio-high)}
+.gobtn{background:none;border:1px solid var(--border);color:var(--muted);font-family:'Space Mono',monospace;font-size:.6rem;padding:2px 8px;border-radius:2px;cursor:pointer}
 </style>
 </head>
 <body>
 <header>
-  <div class="header-left">
-    <h1>&#x1F9E0; Brain Dump</h1>
-  </div>
-  <div class="header-right">
+  <h1>&#x1F9E0; Brain Dump</h1>
+  <div style="display:flex;align-items:center;gap:12px">
     <span class="clock" id="clock"></span>
-    <button class="sync-btn" onclick="clearDone()" title="Ryd afkrydsede">ryd done</button>
+    <button class="ryd-btn" id="ryd-btn">ryd done</button>
   </div>
 </header>
-
 <div class="dump-bar">
-  <input class="dump-input" id="quick-input" placeholder="dump en tanke... #ide #projekt #todo #ring - Enter" onkeydown="if(event.key==='Enter')quickDump()">
-  <button class="dump-submit" onclick="quickDump()">GEM</button>
+  <input class="dump-input" id="qi" placeholder="dump en tanke... #ide #projekt #todo #ring - Enter">
+  <button class="dump-submit" id="gem-btn">GEM</button>
 </div>
 <div class="prio-bar">
   <span>prioritet:</span>
-  <button class="prio-btn sel-low" id="pb-low" onclick="setPrio('low')">ingen</button>
-  <button class="prio-btn" id="pb-med" onclick="setPrio('med')">!! middel</button>
-  <button class="prio-btn" id="pb-high" onclick="setPrio('high')">!!! hoj</button>
+  <button class="prio-btn sel-low" id="pb-low">ingen</button>
+  <button class="prio-btn" id="pb-med">!! middel</button>
+  <button class="prio-btn" id="pb-high">!!! hoj</button>
 </div>
-<div class="status-bar" id="status"></div>
-
+<div class="status" id="st"></div>
 <div class="grid">
-  <div class="card arbejde">
-    <div class="card-header"><span class="card-emoji">&#x1F4BC;</span><span class="card-title">Arbejde</span><span class="card-count" id="cnt-arbejde">0</span></div>
+  <div class="card arbejde" id="card-arbejde">
+    <div class="card-head"><span style="font-size:1rem">&#x1F4BC;</span><span class="card-title">Arbejde</span><span class="cnt" id="cnt-arbejde">0</span></div>
     <div class="entries" id="list-arbejde"></div>
-    <div class="add-row"><input class="add-input" placeholder="+ tilfoej direkte..." id="in-arbejde" onkeydown="if(event.key==='Enter')addDirect('arbejde')"><button class="add-prio" id="ap-arbejde" onclick="cycleP('arbejde')">-</button><button class="add-go" onclick="addDirect('arbejde')">+</button></div>
+    <div class="add-row"><input class="add-inp" id="in-arbejde" placeholder="+ tilfoej direkte..."><button class="apbtn" id="ap-arbejde">-</button><button class="gobtn" id="go-arbejde">+</button></div>
   </div>
-  <div class="card ideer">
-    <div class="card-header"><span class="card-emoji">&#x1F4A1;</span><span class="card-title">Ideer</span><span class="card-count" id="cnt-ideer">0</span></div>
+  <div class="card ideer" id="card-ideer">
+    <div class="card-head"><span style="font-size:1rem">&#x1F4A1;</span><span class="card-title">Ideer</span><span class="cnt" id="cnt-ideer">0</span></div>
     <div class="entries" id="list-ideer"></div>
-    <div class="add-row"><input class="add-input" placeholder="+ tilfoej direkte..." id="in-ideer" onkeydown="if(event.key==='Enter')addDirect('ideer')"><button class="add-prio" id="ap-ideer" onclick="cycleP('ideer')">-</button><button class="add-go" onclick="addDirect('ideer')">+</button></div>
+    <div class="add-row"><input class="add-inp" id="in-ideer" placeholder="+ tilfoej direkte..."><button class="apbtn" id="ap-ideer">-</button><button class="gobtn" id="go-ideer">+</button></div>
   </div>
-  <div class="card personlig">
-    <div class="card-header"><span class="card-emoji">&#x1F331;</span><span class="card-title">Personlig</span><span class="card-count" id="cnt-personlig">0</span></div>
+  <div class="card personlig" id="card-personlig">
+    <div class="card-head"><span style="font-size:1rem">&#x1F331;</span><span class="card-title">Personlig</span><span class="cnt" id="cnt-personlig">0</span></div>
     <div class="entries" id="list-personlig"></div>
-    <div class="add-row"><input class="add-input" placeholder="+ tilfoej direkte..." id="in-personlig" onkeydown="if(event.key==='Enter')addDirect('personlig')"><button class="add-prio" id="ap-personlig" onclick="cycleP('personlig')">-</button><button class="add-go" onclick="addDirect('personlig')">+</button></div>
+    <div class="add-row"><input class="add-inp" id="in-personlig" placeholder="+ tilfoej direkte..."><button class="apbtn" id="ap-personlig">-</button><button class="gobtn" id="go-personlig">+</button></div>
   </div>
-  <div class="card todo">
-    <div class="card-header"><span class="card-emoji">&#x2705;</span><span class="card-title">To-do</span><span class="card-count" id="cnt-todo">0</span></div>
+  <div class="card todo" id="card-todo">
+    <div class="card-head"><span style="font-size:1rem">&#x2705;</span><span class="card-title">To-do</span><span class="cnt" id="cnt-todo">0</span></div>
     <div class="entries" id="list-todo"></div>
-    <div class="add-row"><input class="add-input" placeholder="+ tilfoej direkte..." id="in-todo" onkeydown="if(event.key==='Enter')addDirect('todo')"><button class="add-prio" id="ap-todo" onclick="cycleP('todo')">-</button><button class="add-go" onclick="addDirect('todo')">+</button></div>
+    <div class="add-row"><input class="add-inp" id="in-todo" placeholder="+ tilfoej direkte..."><button class="apbtn" id="ap-todo">-</button><button class="gobtn" id="go-todo">+</button></div>
   </div>
 </div>
-
 <script>
-var KEYS = ['arbejde','ideer','personlig','todo'];
-var TAG_MAP = {'#projekt':'arbejde','#opgave':'arbejde','#mode':'arbejde','#kunde':'arbejde','#ide':'ideer','#ideer':'ideer','#produkt':'ideer','#koncept':'ideer','#kreativ':'ideer','#laer':'personlig','#bog':'personlig','#maal':'personlig','#vane':'personlig','#todo':'todo','#kob':'todo','#ring':'todo','#tjek':'todo','#nu':'todo'};
-var data = {arbejde:[],ideer:[],personlig:[],todo:[]};
-var curPrio = 'low';
-var addP = {arbejde:'low',ideer:'low',personlig:'low',todo:'low'};
+var KEYS=['arbejde','ideer','personlig','todo'];
+var TM={'#projekt':'arbejde','#opgave':'arbejde','#mode':'arbejde','#kunde':'arbejde','#ide':'ideer','#ideer':'ideer','#produkt':'ideer','#koncept':'ideer','#kreativ':'ideer','#laer':'personlig','#bog':'personlig','#maal':'personlig','#vane':'personlig','#todo':'todo','#kob':'todo','#ring':'todo','#tjek':'todo','#nu':'todo'};
+var D={arbejde:[],ideer:[],personlig:[],todo:[]};
+var CP='low';
+var AP={arbejde:'low',ideer:'low',personlig:'low',todo:'low'};
 
-function load() {
-  var saved = localStorage.getItem('bd_data');
-  if (saved) { try { data = JSON.parse(saved); } catch(e){} }
-  renderAll();
-}
-function save() { localStorage.setItem('bd_data', JSON.stringify(data)); }
+function load(){var s=localStorage.getItem('bd');if(s){try{D=JSON.parse(s);}catch(e){}}renderAll();}
+function save(){localStorage.setItem('bd',JSON.stringify(D));}
 
-function setPrio(p) {
-  curPrio = p;
-  KEYS.forEach(function(k){ document.getElementById('pb-'+k) && null; });
+function setPrio(p){
+  CP=p;
   ['low','med','high'].forEach(function(x){
-    var b = document.getElementById('pb-'+x);
-    b.className = 'prio-btn' + (x===p ? ' sel-'+x : '');
+    var b=document.getElementById('pb-'+x);
+    if(b)b.className='prio-btn'+(x===p?' sel-'+x:'');
   });
 }
 
-function cycleP(key) {
+function cycleAP(key){
   var c=['low','med','high'];
-  var n = c[(c.indexOf(addP[key])+1)%3];
-  addP[key] = n;
-  var b = document.getElementById('ap-'+key);
-  b.textContent = n==='high'?'!!!':n==='med'?'!!':'-';
-  b.className = 'add-prio'+(n==='high'?' h':n==='med'?' m':'');
+  var n=c[(c.indexOf(AP[key])+1)%3];
+  AP[key]=n;
+  var b=document.getElementById('ap-'+key);
+  if(!b)return;
+  b.textContent=n==='high'?'!!!':n==='med'?'!!':'-';
+  b.className='apbtn'+(n==='high'?' h':n==='med'?' m':'');
 }
 
-function now() {
-  var d=new Date();
-  return d.getDate()+'/'+(d.getMonth()+1)+' '+pad(d.getHours())+':'+pad(d.getMinutes());
-}
+function now(){var d=new Date();return d.getDate()+'/'+(d.getMonth()+1)+' '+pad(d.getHours())+':'+pad(d.getMinutes());}
 function pad(n){return String(n).padStart(2,'0');}
+function parseTags(t){return(t.match(/#[\w]+/gi)||[]).map(function(x){return x.toLowerCase();});}
+function cleanText(t){return t.replace(/#[\w]+/gi,'').replace(/!!!|!!/g,'').trim()||t.trim();}
 
-function parseTags(text) { return (text.match(/#[\w]+/gi)||[]).map(function(t){return t.toLowerCase();}); }
-function cleanText(text) { return text.replace(/#[\w]+/gi,'').replace(/!!!|!!/g,'').trim()||text.trim(); }
-
-function routeText(text) {
-  var tags = parseTags(text);
-  var targets = [];
-  tags.forEach(function(t){ if(TAG_MAP[t]&&targets.indexOf(TAG_MAP[t])<0) targets.push(TAG_MAP[t]); });
-  if (targets.length===0) targets = ['arbejde'];
-  return targets;
+function routeText(txt){
+  var tags=parseTags(txt),targets=[];
+  tags.forEach(function(t){if(TM[t]&&targets.indexOf(TM[t])<0)targets.push(TM[t]);});
+  return targets.length?targets:['arbejde'];
 }
 
-function quickDump() {
-  var inp = document.getElementById('quick-input');
-  var text = inp.value.trim();
-  if (!text) return;
-  var prio = curPrio;
-  if (text.indexOf('!!!')>=0) prio='high';
-  else if (text.indexOf('!!')>=0) prio='med';
-  var targets = routeText(text);
-  var tags = parseTags(text);
-  var clean = cleanText(text);
-  var ts = now();
+function quickDump(){
+  var inp=document.getElementById('qi');
+  var txt=inp.value.trim();if(!txt)return;
+  var prio=CP;
+  if(txt.indexOf('!!!')>=0)prio='high';
+  else if(txt.indexOf('!!')>=0)prio='med';
+  var targets=routeText(txt);
+  var tags=parseTags(txt);
+  var clean=cleanText(txt);
   targets.forEach(function(k){
-    data[k].unshift({id:Date.now()+''+Math.random(),date:ts,text:clean,tags:tags,prio:prio,done:false});
+    D[k].unshift({id:Date.now()+Math.random(),date:now(),text:clean,tags:tags,prio:prio,done:false});
   });
-  sortData();
-  save();
-  renderAll();
+  sortD();save();renderAll();
   inp.value='';
-  setStatus('Gemt i '+targets.map(cap).join(' + '), 'ok');
+  setStatus('Gemt i '+targets.map(cap).join(' + '),'ok');
 }
 
-function addDirect(key) {
-  var inp = document.getElementById('in-'+key);
-  var text = inp.value.trim();
-  if (!text) return;
-  var prio = addP[key]||'low';
-  var tags = parseTags(text);
-  var clean = cleanText(text);
-  data[key].unshift({id:Date.now()+''+Math.random(),date:now(),text:clean,tags:tags,prio:prio,done:false});
-  sortData();
-  save();
-  renderCard(key);
+function addDirect(key){
+  var inp=document.getElementById('in-'+key);
+  var txt=inp.value.trim();if(!txt)return;
+  var prio=AP[key]||'low';
+  D[key].unshift({id:Date.now()+Math.random(),date:now(),text:cleanText(txt),tags:parseTags(txt),prio:prio,done:false});
+  sortD();save();renderCard(key);
   inp.value='';
-  setStatus('Tilfojet til '+cap(key)+(prio!=='low'?' ['+prio+']':''),'ok');
+  setStatus('Tilfojet til '+cap(key),'ok');
 }
 
-function sortData() {
-  var order={high:0,med:1,low:2};
+function sortD(){
+  var o={high:0,med:1,low:2};
   KEYS.forEach(function(k){
-    data[k].sort(function(a,b){
-      if(a.done!==b.done) return a.done?1:-1;
-      return order[a.prio]-order[b.prio];
+    D[k].sort(function(a,b){
+      if(a.done!==b.done)return a.done?1:-1;
+      return o[a.prio]-o[b.prio];
     });
   });
 }
 
-function toggle(key,id) {
-  var e=data[key].find(function(x){return x.id===id;});
-  if(e) e.done=!e.done;
-  sortData(); save(); renderCard(key);
+function toggle(key,id){
+  var e=D[key].find(function(x){return x.id===id;});
+  if(e)e.done=!e.done;
+  sortD();save();renderCard(key);
 }
 
-function del(key,id) {
-  data[key]=data[key].filter(function(x){return x.id!==id;});
-  save(); renderCard(key);
+function del(key,id){
+  D[key]=D[key].filter(function(x){return x.id!==id;});
+  save();renderCard(key);
 }
 
-function clearDone() {
-  KEYS.forEach(function(k){ data[k]=data[k].filter(function(e){return !e.done;}); });
-  save(); renderAll();
-  setStatus('Afkrydsede slettet','ok');
+function clearDone(){
+  KEYS.forEach(function(k){D[k]=D[k].filter(function(e){return !e.done;});});
+  save();renderAll();setStatus('Ryddet','ok');
 }
 
-function renderAll() { KEYS.forEach(renderCard); }
+function renderAll(){KEYS.forEach(renderCard);}
 
-function renderCard(key) {
-  var list = document.getElementById('list-'+key);
-  var active = data[key].filter(function(e){return !e.done;}).length;
-  document.getElementById('cnt-'+key).textContent = active;
-  if (!data[key].length) {
-    list.innerHTML = '<div style="padding:16px 14px;font-size:.65rem;color:var(--muted)">Tom</div>';
-    return;
-  }
-  list.innerHTML = data[key].map(function(e){
-    var pc = e.prio!=='low'?' prio-'+e.prio:'';
-    var dot = '<div class="prio-dot '+e.prio+'"></div>';
-    var lbl = e.prio==='high'?'<span class="prio-label high">HOJ</span>':e.prio==='med'?'<span class="prio-label med">MIDDEL</span>':'';
-    var tags = e.tags.map(function(t){return '<span class="tag">'+t+'</span>';}).join('');
-    var chk = '<div class="check" onclick="toggle(''+key+'',''+e.id+'')">'+(e.done?'&#x2713;':'')+'</div>';
-    var delbtn = '<button class="del-btn" onclick="del(''+key+'',''+e.id+'')" title="Slet">&#x2715;</button>';
-    return '<div class="entry'+(e.done?' done':'')+pc+'">'
-      +chk+dot
-      +'<div class="entry-body">'
-        +'<div class="entry-meta"><span>'+e.date+'</span>'+lbl+tags+'</div>'
-        +'<div class="entry-text">'+e.text+'</div>'
-      +'</div>'+delbtn+'</div>';
-  }).join('');
+function renderCard(key){
+  var list=document.getElementById('list-'+key);
+  if(!list)return;
+  document.getElementById('cnt-'+key).textContent=D[key].filter(function(e){return !e.done;}).length;
+  if(!D[key].length){list.innerHTML='<div style="padding:16px 14px;font-size:.65rem;color:var(--muted)">Tom</div>';return;}
+  list.innerHTML='';
+  D[key].forEach(function(e){
+    var div=document.createElement('div');
+    div.className='entry'+(e.done?' done':'')+(e.prio!=='low'?' prio-'+e.prio:'');
+    
+    var chk=document.createElement('div');
+    chk.className='chk';
+    chk.innerHTML=e.done?'&#x2713;':'';
+    chk.dataset.key=key; chk.dataset.id=e.id; chk.dataset.act='toggle';
+    
+    var dot=document.createElement('div');
+    dot.className='pdot '+e.prio;
+    
+    var body=document.createElement('div');
+    body.className='ebody';
+    
+    var meta=document.createElement('div');
+    meta.className='emeta';
+    meta.innerHTML='<span>'+e.date+'</span>'
+      +(e.prio==='high'?'<span class="plbl high">HOJ</span>':e.prio==='med'?'<span class="plbl med">MIDDEL</span>':'')
+      +e.tags.map(function(t){return '<span class="etag">'+t+'</span>';}).join('');
+    
+    var txt=document.createElement('div');
+    txt.className='etxt';
+    txt.textContent=e.text;
+    
+    var dbtn=document.createElement('button');
+    dbtn.className='dbtn'; dbtn.title='Slet'; dbtn.innerHTML='&#x2715;';
+    dbtn.dataset.key=key; dbtn.dataset.id=e.id; dbtn.dataset.act='del';
+    
+    body.appendChild(meta); body.appendChild(txt);
+    div.appendChild(chk); div.appendChild(dot); div.appendChild(body); div.appendChild(dbtn);
+    list.appendChild(div);
+  });
 }
 
 function setStatus(msg,type){
-  var el=document.getElementById('status');
-  el.textContent=msg; el.className='status-bar '+(type||'');
-  if(type==='ok') setTimeout(function(){el.textContent='';el.className='status-bar';},3000);
+  var el=document.getElementById('st');
+  el.textContent=msg; el.className='status '+(type||'');
+  if(type==='ok')setTimeout(function(){el.textContent='';el.className='status';},3000);
 }
-
 function cap(s){return s.charAt(0).toUpperCase()+s.slice(1);}
-
 function updateClock(){
   var d=new Date();
   var days=['son','man','tirs','ons','tors','fre','lor'];
   document.getElementById('clock').textContent=days[d.getDay()]+' '+d.getDate()+'/'+(d.getMonth()+1)+' '+pad(d.getHours())+':'+pad(d.getMinutes());
 }
 
-window.addEventListener('DOMContentLoaded',function(){
+document.addEventListener('DOMContentLoaded',function(){
   load(); updateClock(); setInterval(updateClock,30000);
+  
+  document.getElementById('gem-btn').addEventListener('click', quickDump);
+  document.getElementById('qi').addEventListener('keydown',function(e){if(e.key==='Enter')quickDump();});
+  document.getElementById('ryd-btn').addEventListener('click', clearDone);
+  
+  ['pb-low','pb-med','pb-high'].forEach(function(id){
+    document.getElementById(id).addEventListener('click',function(){setPrio(id.replace('pb-',''));});
+  });
+  
+  KEYS.forEach(function(key){
+    document.getElementById('go-'+key).addEventListener('click',function(){addDirect(key);});
+    document.getElementById('in-'+key).addEventListener('keydown',function(e){if(e.key==='Enter')addDirect(key);});
+    document.getElementById('ap-'+key).addEventListener('click',function(){cycleAP(key);});
+  });
+  
+  document.addEventListener('click',function(e){
+    var el=e.target.closest('[data-act]');
+    if(!el)return;
+    var act=el.dataset.act, key=el.dataset.key, id=parseFloat(el.dataset.id);
+    if(act==='toggle')toggle(key,id);
+    if(act==='del')del(key,id);
+  });
 });
 </script>
 </body>
