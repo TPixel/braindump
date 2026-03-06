@@ -134,7 +134,7 @@ function fbGet() {
     .then(function(r){ return r.json(); })
     .then(function(data){
       if (data) {
-        KEYS.forEach(function(k){ if (data[k]) D[k] = data[k]; });
+        KEYS.forEach(function(k){ if (data[k]) D[k] = Object.values(data[k]).map(function(e){ return {id:e.id||Date.now(),date:e.date||"",text:e.text||"",tags:e.tags||[],prio:e.prio||"low",done:e.done||false}; }); });
       }
       renderAll();
       setSyncStatus('synket','ok');
@@ -258,7 +258,7 @@ function renderCard(key){
     meta.className='emeta';
     meta.innerHTML='<span>'+e.date+'</span>'
       +(e.prio==='high'?'<span class="plbl high">HOJ</span>':e.prio==='med'?'<span class="plbl med">MIDDEL</span>':'')
-      +e.tags.map(function(t){return '<span class="etag">'+t+'</span>';}).join('');
+      +(e.tags||[]).map(function(t){return '<span class="etag">'+t+'</span>';}.join('');
     var txt=document.createElement('div');
     txt.className='etxt'; txt.textContent=e.text;
     var dbtn=document.createElement('button');
