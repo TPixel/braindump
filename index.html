@@ -262,8 +262,8 @@ function syncAll() {
     var k = keys[i++];
     setLoadingMsg('Henter ' + k + '...');
     callClaude(
-      'Du er et datahentningsvaerktoej. Brug get_note_content til at hente Apple Note: "' + NOTE_FULL[k] + '". Returner KUN det raa tekstindhold.',
-      'Hent: ' + NOTE_FULL[k]
+      'You are a tool. Use the get_note_content Apple Notes tool to fetch the note with EXACT name: "' + NOTE_FULL[k] + '". Return ONLY the raw text content of the note, nothing else. No explanations.',
+      'Fetch note: ' + NOTE_FULL[k]
     ).then(function(raw) { entries[k] = parseNote(raw); next(); })
     .catch(function(e) { console.warn(k, e); next(); });
   }
