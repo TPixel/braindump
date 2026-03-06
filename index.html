@@ -356,7 +356,7 @@ function renderCard(key) {
     var dotClass = e.prio;
     var prioLbl = e.prio === 'high' ? '<span class="prio-label high">HOJ</span>' : e.prio === 'med' ? '<span class="prio-label med">MIDDEL</span>' : '';
     return '<div class="entry' + prioClass + (e.done?' done':'') + '">' +
-      '<div class="check" onclick="toggle('' + key + '',' + i + ')">' + (e.done?'v':'') + '</div>' +
+      '<div class="check" onclick="toggle(\'' + key + '\',' + i + ')">' + (e.done?'v':'') + '</div>' +
       '<div class="prio-dot ' + dotClass + '"></div>' +
       '<div class="entry-body">' +
         '<div class="entry-meta"><span>' + e.date + '</span>' + prioLbl +
