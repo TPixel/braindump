@@ -261,11 +261,13 @@ function syncAll() {
     if (i >= keys.length) { renderAll(); setStatus('Synkroniseret', 'ok'); hideLoading(); return; }
     var k = keys[i++];
     setLoadingMsg('Henter ' + k + '...');
-    callClaude(
-      'You are a tool. Use the get_note_content Apple Notes tool to fetch the note with EXACT name: "' + NOTE_FULL[k] + '". Return ONLY the raw text content of the note, nothing else. No explanations.',
-      'Fetch note: ' + NOTE_FULL[k]
-    ).then(function(raw) { entries[k] = parseNote(raw); next(); })
-    .catch(function(e) { console.warn(k, e); next(); });
+    setTimeout(function() {
+      callClaude(
+        'You are a tool. Use the get_note_content Apple Notes tool to fetch the note with EXACT name: "' + NOTE_FULL[k] + '". Return ONLY the raw text content of the note, nothing else. No explanations.',
+        'Fetch note: ' + NOTE_FULL[k]
+      ).then(function(raw) { entries[k] = parseNote(raw); next(); })
+      .catch(function(e) { console.warn(k, e); next(); });
+    }, i === 1 ? 0 : (i-1) * 3000);
   }
   next();
 }
