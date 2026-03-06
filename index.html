@@ -3,9 +3,9 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>🧠 Brain Dump</title>
+<title>Brain Dump</title>
 <style>
-@import url('https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=Space+Mono:ital,wght@0,400;0,700;1,400&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=Space+Mono:wght@400;700&display=swap');
 :root{--bg:#0f0f0f;--surface:#161616;--surface2:#1c1c1c;--border:#272727;--text:#e8e4dc;--muted:#555;--arbejde:#c8a96e;--ideer:#6eb5c8;--personlig:#8ec87a;--todo:#c87a8e}
 *{box-sizing:border-box;margin:0;padding:0}
 body{background:var(--bg);color:var(--text);font-family:'Space Mono',monospace;min-height:100vh;padding:20px;max-width:1200px;margin:0 auto}
@@ -15,7 +15,7 @@ body{background:var(--bg);color:var(--text);font-family:'Space Mono',monospace;m
 .setup-box{background:var(--surface);border:1px solid var(--border);border-radius:6px;padding:28px 32px;width:100%;max-width:420px;display:flex;flex-direction:column;gap:14px}
 .setup-box label{font-size:.65rem;color:var(--muted);letter-spacing:.1em;text-transform:uppercase}
 .setup-box input{background:var(--bg);border:1px solid var(--border);color:var(--text);font-family:'Space Mono',monospace;font-size:.75rem;padding:10px 12px;border-radius:4px;outline:none;width:100%}
-.btn-primary{background:var(--text);color:var(--bg);border:none;font-family:'Syne',sans-serif;font-weight:700;font-size:.8rem;padding:12px;border-radius:4px;cursor:pointer;letter-spacing:.06em;transition:opacity .15s;width:100%}
+.btn-primary{background:var(--text);color:var(--bg);border:none;font-family:'Syne',sans-serif;font-weight:700;font-size:.8rem;padding:12px;border-radius:4px;cursor:pointer;width:100%}
 #app{display:none}
 header{display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;padding-bottom:16px;border-bottom:1px solid var(--border)}
 .header-left{display:flex;align-items:baseline;gap:14px}
@@ -27,7 +27,8 @@ h1{font-family:'Syne',sans-serif;font-weight:800;font-size:1.4rem;letter-spacing
 .dump-bar{display:flex;gap:10px;margin-bottom:6px}
 .dump-input{flex:1;background:var(--surface);border:1px solid var(--border);color:var(--text);font-family:'Space Mono',monospace;font-size:.8rem;padding:13px 16px;border-radius:4px;outline:none}
 .dump-input::placeholder{color:var(--muted)}
-.dump-submit{background:var(--text);color:var(--bg);border:none;font-family:'Syne',sans-serif;font-weight:700;font-size:.75rem;padding:13px 20px;border-radius:4px;cursor:pointer;letter-spacing:.06em;white-space:nowrap}
+.dump-submit{background:var(--text);color:var(--bg);border:none;font-family:'Syne',sans-serif;font-weight:700;font-size:.75rem;padding:13px 20px;border-radius:4px;cursor:pointer;white-space:nowrap}
+.dump-submit:disabled{opacity:.5;cursor:not-allowed}
 .status-bar{font-size:.63rem;color:var(--muted);min-height:22px;padding:3px 0 14px}
 .status-bar.ok{color:var(--personlig)}.status-bar.err{color:var(--todo)}.status-bar.info{color:var(--ideer)}
 .grid{display:grid;grid-template-columns:repeat(2,1fr);gap:14px}
@@ -63,60 +64,285 @@ h1{font-family:'Syne',sans-serif;font-weight:800;font-size:1.4rem;letter-spacing
 </head>
 <body>
 <div id="setup-screen">
-<h1>🧠 Brain Dump</h1>
-<p>Indtast din Anthropic API-nøgle. Gemmes kun lokalt i din browser.</p>
+<h1>Brain Dump</h1>
+<p>Indtast din Anthropic API-nogle. Gemmes kun lokalt i din browser.</p>
 <div class="setup-box">
-<label>Anthropic API-nøgle</label>
+<label>Anthropic API-nogle</label>
 <input type="password" id="api-key-input" placeholder="sk-ant-api03-..." autocomplete="off">
-<button class="btn-primary" onclick="saveAndStart()">Forbind →</button>
+<button class="btn-primary" onclick="saveAndStart()">Forbind</button>
 </div>
-<p style="font-size:.6rem">Forlader aldrig din enhed · localStorage</p>
+<p style="font-size:.6rem">Forlader aldrig din enhed - localStorage</p>
 </div>
 <div id="app">
-<div class="loading-overlay" id="loading"><div class="spinner"></div><span id="loading-msg">Henter noter…</span></div>
+<div class="loading-overlay" id="loading"><div class="spinner"></div><span id="loading-msg">Henter noter...</span></div>
 <header>
-<div class="header-left"><h1>🧠 Brain Dump</h1><button class="sync-btn" onclick="syncAll()">↻ sync</button></div>
+<div class="header-left"><h1>Brain Dump</h1><button class="sync-btn" onclick="syncAll()">sync</button></div>
 <div class="header-right"><span class="clock" id="clock"></span><button class="sync-btn" onclick="logout()" style="color:#444">log ud</button></div>
 </header>
 <div class="dump-bar">
-<input class="dump-input" id="quick-input" placeholder="dump en tanke... #idé #projekt #todo #lær → Enter" onkeydown="if(event.key==='Enter')quickDump()">
-<button class="dump-submit" id="dump-btn" onclick="quickDump()">GEM →</button>
+<input class="dump-input" id="quick-input" placeholder="dump en tanke... #ide #projekt #todo #laer #ring - Enter" onkeydown="if(event.key==='Enter')quickDump()">
+<button class="dump-submit" id="dump-btn" onclick="quickDump()">GEM</button>
 </div>
 <div class="status-bar" id="status"></div>
 <div class="grid">
-<div class="card arbejde"><div class="card-header"><span class="card-emoji">💼</span><span class="card-title">Arbejde</span><span class="card-count" id="cnt-arbejde">—</span></div><div class="entries" id="list-arbejde"></div><div class="add-row"><input class="add-input" placeholder="+ tilføj direkte…" id="in-arbejde" onkeydown="if(event.key==='Enter')addDirect('arbejde')"><button class="add-go" onclick="addDirect('arbejde')">↵</button></div></div>
-<div class="card ideer"><div class="card-header"><span class="card-emoji">💡</span><span class="card-title">Idéer</span><span class="card-count" id="cnt-ideer">—</span></div><div class="entries" id="list-ideer"></div><div class="add-row"><input class="add-input" placeholder="+ tilføj direkte…" id="in-ideer" onkeydown="if(event.key==='Enter')addDirect('ideer')"><button class="add-go" onclick="addDirect('ideer')">↵</button></div></div>
-<div class="card personlig"><div class="card-header"><span class="card-emoji">🌱</span><span class="card-title">Personlig</span><span class="card-count" id="cnt-personlig">—</span></div><div class="entries" id="list-personlig"></div><div class="add-row"><input class="add-input" placeholder="+ tilføj direkte…" id="in-personlig" onkeydown="if(event.key==='Enter')addDirect('personlig')"><button class="add-go" onclick="addDirect('personlig')">↵</button></div></div>
-<div class="card todo"><div class="card-header"><span class="card-emoji">✅</span><span class="card-title">To-do</span><span class="card-count" id="cnt-todo">—</span></div><div class="entries" id="list-todo"></div><div class="add-row"><input class="add-input" placeholder="+ tilføj direkte…" id="in-todo" onkeydown="if(event.key==='Enter')addDirect('todo')"><button class="add-go" onclick="addDirect('todo')">↵</button></div></div>
+<div class="card arbejde">
+<div class="card-header"><span class="card-emoji">&#x1F4BC;</span><span class="card-title">Arbejde</span><span class="card-count" id="cnt-arbejde">-</span></div>
+<div class="entries" id="list-arbejde"></div>
+<div class="add-row"><input class="add-input" placeholder="+ tilfoej direkte..." id="in-arbejde" onkeydown="if(event.key==='Enter')addDirect('arbejde')"><button class="add-go" onclick="addDirect('arbejde')">+</button></div>
+</div>
+<div class="card ideer">
+<div class="card-header"><span class="card-emoji">&#x1F4A1;</span><span class="card-title">Ideer</span><span class="card-count" id="cnt-ideer">-</span></div>
+<div class="entries" id="list-ideer"></div>
+<div class="add-row"><input class="add-input" placeholder="+ tilfoej direkte..." id="in-ideer" onkeydown="if(event.key==='Enter')addDirect('ideer')"><button class="add-go" onclick="addDirect('ideer')">+</button></div>
+</div>
+<div class="card personlig">
+<div class="card-header"><span class="card-emoji">&#x1F331;</span><span class="card-title">Personlig</span><span class="card-count" id="cnt-personlig">-</span></div>
+<div class="entries" id="list-personlig"></div>
+<div class="add-row"><input class="add-input" placeholder="+ tilfoej direkte..." id="in-personlig" onkeydown="if(event.key==='Enter')addDirect('personlig')"><button class="add-go" onclick="addDirect('personlig')">+</button></div>
+</div>
+<div class="card todo">
+<div class="card-header"><span class="card-emoji">&#x2705;</span><span class="card-title">To-do</span><span class="card-count" id="cnt-todo">-</span></div>
+<div class="entries" id="list-todo"></div>
+<div class="add-row"><input class="add-input" placeholder="+ tilfoej direkte..." id="in-todo" onkeydown="if(event.key==='Enter')addDirect('todo')"><button class="add-go" onclick="addDirect('todo')">+</button></div>
+</div>
 </div>
 </div>
 <script>
-const NOTE_NAMES={arbejde:'🧠 BD — 💼 Arbejde Projekter · Opgaver · Møder · Kunder Tags: #projekt…',ideer:'🧠 BD — 💡 Idéer Idéer · Produkter · Koncepter · Kreativt Tags: #idé…',personlig:'🧠 BD — 🌱 Personlig Læring · Bøger · Mål · Vaner Tags: #lær #bog…',todo:'🧠 BD — ✅ To-do Opgaver · Indkøb · Ring til · Tjek Tags: #todo #køb…'};
-const TAG_MAP={'#projekt':'arbejde','#opgave':'arbejde','#møde':'arbejde','#kunde':'arbejde','#idé':'ideer','#ide':'ideer','#ideer':'ideer','#produkt':'ideer','#koncept':'ideer','#kreativ':'ideer','#lær':'personlig','#laer':'personlig','#bog':'personlig','#mål':'personlig','#maal':'personlig','#vane':'personlig','#todo':'todo','#køb':'todo','#kob':'todo','#ring':'todo','#tjek':'todo'};
-const entries={arbejde:[],ideer:[],personlig:[],todo:[]};
-function getKey(){return localStorage.getItem('bd_apikey')}
-function saveAndStart(){const v=document.getElementById('api-key-input').value.trim();if(!v.startsWith('sk-ant-')){alert('Nøglen skal starte med sk-ant-…');return}localStorage.setItem('bd_apikey',v);startApp()}
-function logout(){localStorage.removeItem('bd_apikey');location.reload()}
-window.addEventListener('DOMContentLoaded',()=>{updateClock();setInterval(updateClock,15000);if(getKey())startApp()});
-function startApp(){document.getElementById('setup-screen').style.display='none';document.getElementById('app').style.display='block';syncAll()}
-async function callClaude(sys,msg){const r=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json','x-api-key':getKey(),'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:1000,system:sys,messages:[{role:'user',content:msg}]})});if(!r.ok){const e=await r.json();throw new Error(e.error?.message||r.status)}const d=await r.json();return d.content[0].text}
-function parseNote(raw){const lines=raw.split('\n').map(l=>l.trim()).filter(Boolean);const res=[];for(const l of lines){const m=l.match(/^\[\s*(.+?)\s*\]\s*(.*)/);if(!m)continue;const date=m[1],rest=m[2];const tags=(rest.match(/#[\wæøåÆØÅ]+/gi)||[]);const text=rest.replace(/#[\wæøåÆØÅ]+/gi,'').replace(/^[\s\u2014\u2013-]+/,'').trim();if(text)res.push({date,tags,text,done:false})}return res}
-async function syncAll(){showLoading('Henter noter…');setStatus('Synkroniserer…','info');try{for(const k of Object.keys(NOTE_NAMES)){setLoadingMsg('Henter '+k+'…');const raw=await callClaude('Returnér KUN råt tekstindhold af Apple Note: "'+NOTE_NAMES[k]+'". Brug get_note_content. Returnér kun noteteksten.','Hent: '+NOTE_NAMES[k]);entries[k]=parseNote(raw)}renderAll();setStatus('✓ Synkroniseret · '+fmtTime(new Date()),'ok')}catch(e){setStatus('Fejl: '+e.message,'err');renderAll()}hideLoading()}
-async function quickDump(){const inp=document.getElementById('quick-input');const text=inp.value.trim();if(!text)return;setBusy(true);const rawTags=(text.match(/#[\wæøåÆØÅ]+/gi)||[]).map(t=>t.toLowerCase());const clean=text.replace(/#[\wæøåÆØÅ]+/gi,'').trim()||text;const targets=new Set();rawTags.forEach(t=>{if(TAG_MAP[t])targets.add(TAG_MAP[t])});if(targets.size===0){setStatus('Tænker…','info');try{const d=await callClaude('Router. Kategorier: arbejde,ideer,personlig,todo. KUN kommasepareret liste.','Kategorier for: "'+text+'"');d.split(',').map(s=>s.trim().toLowerCase()).forEach(k=>{if(entries[k]!==undefined)targets.add(k)})}catch(e){['arbejde','ideer','personlig','todo'].forEach(k=>targets.add(k))}}const now=new Date();const date=now.getDate()+'/'+(now.getMonth()+1)+' '+pad(now.getHours())+':'+pad(now.getMinutes());for(const k of targets){entries[k].push({date,tags:rawTags,text:clean,done:false});renderCard(k);await appendToNote(k,date,rawTags,clean)}inp.value='';setStatus('✓ Gemt i '+[...targets].map(capitalise).join(' + '),'ok');setBusy(false)}
-async function addDirect(key){const inp=document.getElementById('in-'+key);const text=inp.value.trim();if(!text)return;setBusy(true);const now=new Date();const date=now.getDate()+'/'+(now.getMonth()+1)+' '+pad(now.getHours())+':'+pad(now.getMinutes());const rawTags=(text.match(/#[\wæøåÆØÅ]+/gi)||[]);const clean=text.replace(/#[\wæøåÆØÅ]+/gi,'').trim()||text;entries[key].push({date,tags:rawTags,text:clean,done:false});renderCard(key);inp.value='';await appendToNote(key,date,rawTags,clean);setStatus('✓ Tilføjet til '+capitalise(key),'ok');setBusy(false)}
-async function appendToNote(key,date,tags,text){const ts=tags.join(' ');const line='[ '+date+' ] '+ts+(ts?' — ':'')+text;try{await callClaude('Apple Notes editor. Tilføj linje i bunden af "'+NOTE_NAMES[key]+'": '+line+'. Returnér OK.','Tilføj.')}catch(e){console.warn(e)}}
-function renderAll(){['arbejde','ideer','personlig','todo'].forEach(renderCard)}
-function renderCard(key){const list=document.getElementById('list-'+key);const active=entries[key].filter(e=>!e.done).length;document.getElementById('cnt-'+key).textContent=active+' aktive';if(!entries[key].length){list.innerHTML='<div style="padding:16px 14px;font-size:.65rem;color:var(--muted)">Ingen entries endnu</div>';return}list.innerHTML=entries[key].map((e,i)=>'<div class="entry '+(e.done?'done':'')+'" ><div class="check" onclick="toggle(''+key+'','+i+')">'+(e.done?'✓':'')+'</div><div class="entry-body"><div class="entry-meta"><span>'+e.date+'</span>'+e.tags.map(t=>'<span class="tag">'+t+'</span>').join('')+'</div><div class="entry-text">'+e.text+'</div></div></div>').join('')}
-function toggle(key,i){entries[key][i].done=!entries[key][i].done;renderCard(key)}
-function pad(n){return String(n).padStart(2,'0')}
-function capitalise(s){return s.charAt(0).toUpperCase()+s.slice(1)}
-function fmtTime(d){return pad(d.getHours())+':'+pad(d.getMinutes())}
-function setStatus(msg,type){const el=document.getElementById('status');el.textContent=msg;el.className='status-bar '+(type||'');if(type==='ok')setTimeout(()=>{el.textContent='';el.className='status-bar'},4000)}
-function showLoading(msg){document.getElementById('loading').style.display='flex';document.getElementById('loading-msg').textContent=msg}
-function setLoadingMsg(msg){document.getElementById('loading-msg').textContent=msg}
-function hideLoading(){document.getElementById('loading').style.display='none'}
-function setBusy(b){document.getElementById('dump-btn').disabled=b;document.getElementById('quick-input').disabled=b}
-function updateClock(){const d=new Date();const days=['søn','man','tirs','ons','tors','fre','lør'];document.getElementById('clock').textContent=days[d.getDay()]+' '+d.getDate()+'/'+(d.getMonth()+1)+' · '+pad(d.getHours())+':'+pad(d.getMinutes())}
+var NOTE_NAMES = {
+  arbejde: 'BD Arbejde',
+  ideer: 'BD Ideer',
+  personlig: 'BD Personlig',
+  todo: 'BD Todo'
+};
+var NOTE_FULL = {
+  arbejde: '🧠 BD — 💼 Arbejde Projekter · Opgaver · Møder · Kunder Tags: #projekt…',
+  ideer: '🧠 BD — 💡 Idéer Idéer · Produkter · Koncepter · Kreativt Tags: #idé…',
+  personlig: '🧠 BD — 🌱 Personlig Læring · Bøger · Mål · Vaner Tags: #lær #bog…',
+  todo: '🧠 BD — ✅ To-do Opgaver · Indkøb · Ring til · Tjek Tags: #todo #køb…'
+};
+var TAG_MAP = {
+  '#projekt':'arbejde','#opgave':'arbejde','#mode':'arbejde','#kunde':'arbejde',
+  '#ide':'ideer','#ideer':'ideer','#produkt':'ideer','#koncept':'ideer','#kreativ':'ideer',
+  '#laer':'personlig','#bog':'personlig','#maal':'personlig','#vane':'personlig',
+  '#todo':'todo','#kob':'todo','#ring':'todo','#tjek':'todo'
+};
+var entries = {arbejde:[],ideer:[],personlig:[],todo:[]};
+
+function getKey() { return localStorage.getItem('bd_apikey'); }
+
+function saveAndStart() {
+  var v = document.getElementById('api-key-input').value.trim();
+  if (!v.startsWith('sk-ant-')) { alert('Noeglen skal starte med sk-ant-'); return; }
+  localStorage.setItem('bd_apikey', v);
+  startApp();
+}
+
+function logout() { localStorage.removeItem('bd_apikey'); location.reload(); }
+
+window.addEventListener('DOMContentLoaded', function() {
+  updateClock();
+  setInterval(updateClock, 15000);
+  if (getKey()) startApp();
+});
+
+function startApp() {
+  document.getElementById('setup-screen').style.display = 'none';
+  document.getElementById('app').style.display = 'block';
+  syncAll();
+}
+
+function callClaude(sys, msg) {
+  return fetch('https://api.anthropic.com/v1/messages', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'x-api-key': getKey(),
+      'anthropic-version': '2023-06-01',
+      'anthropic-dangerous-direct-browser-access': 'true'
+    },
+    body: JSON.stringify({
+      model: 'claude-haiku-4-5-20251001',
+      max_tokens: 2000,
+      system: sys,
+      messages: [{role:'user', content: msg}]
+    })
+  }).then(function(r) {
+    if (!r.ok) return r.json().then(function(e) { throw new Error(e.error ? e.error.message : r.status); });
+    return r.json();
+  }).then(function(d) {
+    return d.content[0].text;
+  });
+}
+
+function parseNote(raw) {
+  var lines = raw.split('\n');
+  var res = [];
+  for (var i = 0; i < lines.length; i++) {
+    var l = lines[i].trim();
+    var m = l.match(/^\[\s*(.+?)\s*\]\s*(.*)/);
+    if (!m) continue;
+    var date = m[1];
+    var rest = m[2];
+    var tags = rest.match(/#[\w]+/gi) || [];
+    var text = rest.replace(/#[\w]+/gi, '').replace(/^[\s\-]+/, '').trim();
+    if (text) res.push({date:date, tags:tags, text:text, done:false});
+  }
+  return res;
+}
+
+function syncAll() {
+  showLoading('Henter noter...');
+  setStatus('Synkroniserer...', 'info');
+  var keys = ['arbejde','ideer','personlig','todo'];
+  var i = 0;
+  function next() {
+    if (i >= keys.length) {
+      renderAll();
+      setStatus('Synkroniseret', 'ok');
+      hideLoading();
+      return;
+    }
+    var k = keys[i++];
+    setLoadingMsg('Henter ' + k + '...');
+    callClaude(
+      'Du er et datahentningsvaerktoej. Brug get_note_content til at hente Apple Note med navn: "' + NOTE_FULL[k] + '". Returner KUN det raa tekstindhold af noten - ingen forklaringer.',
+      'Hent indholdet af noten: ' + NOTE_FULL[k]
+    ).then(function(raw) {
+      entries[k] = parseNote(raw);
+      next();
+    }).catch(function(e) {
+      console.warn('sync fejl ' + k + ':', e);
+      next();
+    });
+  }
+  next();
+}
+
+function quickDump() {
+  var inp = document.getElementById('quick-input');
+  var text = inp.value.trim();
+  if (!text) return;
+  setBusy(true);
+  var rawTags = (text.match(/#[\w]+/gi) || []).map(function(t){ return t.toLowerCase(); });
+  var clean = text.replace(/#[\w]+/gi,'').trim() || text;
+  var targets = [];
+  rawTags.forEach(function(t){ if (TAG_MAP[t] && targets.indexOf(TAG_MAP[t]) < 0) targets.push(TAG_MAP[t]); });
+  if (targets.length === 0) {
+    setStatus('Taenker...', 'info');
+    callClaude(
+      'Du er en router. Kategorier: arbejde, ideer, personlig, todo. Returner KUN kommasepareret liste uden mellemrum.',
+      'Hvilke kategorier passer til: "' + text + '"'
+    ).then(function(d) {
+      d.split(',').forEach(function(s) {
+        var k = s.trim().toLowerCase();
+        if (entries[k] !== undefined && targets.indexOf(k) < 0) targets.push(k);
+      });
+      doSave(targets, rawTags, clean, inp);
+    }).catch(function() {
+      doSave(['arbejde','ideer','personlig','todo'], rawTags, clean, inp);
+    });
+  } else {
+    doSave(targets, rawTags, clean, inp);
+  }
+}
+
+function doSave(targets, rawTags, clean, inp) {
+  var now = new Date();
+  var date = now.getDate() + '/' + (now.getMonth()+1) + ' ' + pad(now.getHours()) + ':' + pad(now.getMinutes());
+  var saved = 0;
+  targets.forEach(function(k) {
+    entries[k].push({date:date, tags:rawTags, text:clean, done:false});
+    renderCard(k);
+    appendToNote(k, date, rawTags, clean).then(function() {
+      saved++;
+      if (saved === targets.length) {
+        inp.value = '';
+        setStatus('Gemt i ' + targets.map(capitalise).join(' + '), 'ok');
+        setBusy(false);
+      }
+    });
+  });
+}
+
+function addDirect(key) {
+  var inp = document.getElementById('in-' + key);
+  var text = inp.value.trim();
+  if (!text) return;
+  setBusy(true);
+  var now = new Date();
+  var date = now.getDate() + '/' + (now.getMonth()+1) + ' ' + pad(now.getHours()) + ':' + pad(now.getMinutes());
+  var rawTags = (text.match(/#[\w]+/gi) || []);
+  var clean = text.replace(/#[\w]+/gi,'').trim() || text;
+  entries[key].push({date:date, tags:rawTags, text:clean, done:false});
+  renderCard(key);
+  inp.value = '';
+  appendToNote(key, date, rawTags, clean).then(function() {
+    setStatus('Tilfojet til ' + capitalise(key), 'ok');
+    setBusy(false);
+  });
+}
+
+function appendToNote(key, date, tags, text) {
+  var ts = tags.join(' ');
+  var line = '[ ' + date + ' ] ' + ts + (ts ? ' - ' : '') + text;
+  return callClaude(
+    'Du er Apple Notes editor. Tilfoej denne linje i bunden af noten "' + NOTE_FULL[key] + '": ' + line + '. Returner kun OK.',
+    'Tilfoej linjen.'
+  ).catch(function(e){ console.warn('append fejl:', e); });
+}
+
+function renderAll() {
+  ['arbejde','ideer','personlig','todo'].forEach(renderCard);
+}
+
+function renderCard(key) {
+  var list = document.getElementById('list-' + key);
+  var active = entries[key].filter(function(e){ return !e.done; }).length;
+  document.getElementById('cnt-' + key).textContent = active + ' aktive';
+  if (!entries[key].length) {
+    list.innerHTML = '<div style="padding:16px 14px;font-size:.65rem;color:var(--muted)">Ingen entries endnu</div>';
+    return;
+  }
+  list.innerHTML = entries[key].map(function(e, i) {
+    return '<div class="entry ' + (e.done?'done':'') + '">' +
+      '<div class="check" onclick="toggle('' + key + '',' + i + ')">' + (e.done?'v':'') + '</div>' +
+      '<div class="entry-body">' +
+        '<div class="entry-meta"><span>' + e.date + '</span>' +
+          e.tags.map(function(t){ return '<span class="tag">' + t + '</span>'; }).join('') +
+        '</div>' +
+        '<div class="entry-text">' + e.text + '</div>' +
+      '</div></div>';
+  }).join('');
+}
+
+function toggle(key, i) {
+  entries[key][i].done = !entries[key][i].done;
+  renderCard(key);
+}
+
+function pad(n){ return String(n).padStart(2,'0'); }
+function capitalise(s){ return s.charAt(0).toUpperCase() + s.slice(1); }
+
+function setStatus(msg, type) {
+  var el = document.getElementById('status');
+  el.textContent = msg;
+  el.className = 'status-bar ' + (type || '');
+  if (type === 'ok') setTimeout(function(){ el.textContent=''; el.className='status-bar'; }, 4000);
+}
+
+function showLoading(msg) {
+  document.getElementById('loading').style.display = 'flex';
+  document.getElementById('loading-msg').textContent = msg;
+}
+function setLoadingMsg(msg){ document.getElementById('loading-msg').textContent = msg; }
+function hideLoading(){ document.getElementById('loading').style.display = 'none'; }
+function setBusy(b){ document.getElementById('dump-btn').disabled = b; document.getElementById('quick-input').disabled = b; }
+
+function updateClock() {
+  var d = new Date();
+  var days = ['son','man','tirs','ons','tors','fre','lor'];
+  document.getElementById('clock').textContent = days[d.getDay()] + ' ' + d.getDate() + '/' + (d.getMonth()+1) + ' ' + pad(d.getHours()) + ':' + pad(d.getMinutes());
+}
 </script>
 </body>
 </html>
