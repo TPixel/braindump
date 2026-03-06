@@ -11,7 +11,13 @@
 body{background:var(--bg);color:var(--text);font-family:'Space Mono',monospace;min-height:100vh;padding:20px;max-width:1200px;margin:0 auto}
 header{display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;padding-bottom:16px;border-bottom:1px solid var(--border)}
 h1{font-family:'Syne',sans-serif;font-weight:800;font-size:1.4rem;letter-spacing:-.02em}
-.ryd-btn{background:none;border:1px solid var(--border);color:var(--muted);font-family:'Space Mono',monospace;font-size:.62rem;padding:4px 10px;border-radius:3px;cursor:pointer}
+.top-btns{display:flex;align-items:center;gap:8px}
+.ryd-btn,.sync-btn{background:none;border:1px solid var(--border);color:var(--muted);font-family:'Space Mono',monospace;font-size:.62rem;padding:4px 10px;border-radius:3px;cursor:pointer}
+.sync-btn{border-color:#4a9}
+.sync-status{font-size:.58rem;padding:3px 8px;border-radius:3px}
+.sync-status.ok{color:#4a9;background:#0a1f16}
+.sync-status.err{color:var(--prio-high);background:#1f0a0a}
+.sync-status.syncing{color:var(--prio-med);background:#1f1a0a}
 .clock{font-size:.65rem;color:var(--muted)}
 .dump-bar{display:flex;gap:10px;margin-bottom:8px}
 .dump-input{flex:1;background:var(--surface);border:1px solid var(--border);color:var(--text);font-family:'Space Mono',monospace;font-size:.8rem;padding:13px 16px;border-radius:4px;outline:none}
@@ -69,8 +75,9 @@ h1{font-family:'Syne',sans-serif;font-weight:800;font-size:1.4rem;letter-spacing
 <body>
 <header>
   <h1>&#x1F9E0; Brain Dump</h1>
-  <div style="display:flex;align-items:center;gap:12px">
+  <div class="top-btns">
     <span class="clock" id="clock"></span>
+    <span class="sync-status" id="sync-status"></span>
     <button class="ryd-btn" id="ryd-btn">ryd done</button>
   </div>
 </header>
@@ -86,42 +93,72 @@ h1{font-family:'Syne',sans-serif;font-weight:800;font-size:1.4rem;letter-spacing
 </div>
 <div class="status" id="st"></div>
 <div class="grid">
-  <div class="card arbejde" id="card-arbejde">
+  <div class="card arbejde">
     <div class="card-head"><span style="font-size:1rem">&#x1F4BC;</span><span class="card-title">Arbejde</span><span class="cnt" id="cnt-arbejde">0</span></div>
     <div class="entries" id="list-arbejde"></div>
     <div class="add-row"><input class="add-inp" id="in-arbejde" placeholder="+ tilfoej direkte..."><button class="apbtn" id="ap-arbejde">-</button><button class="gobtn" id="go-arbejde">+</button></div>
   </div>
-  <div class="card ideer" id="card-ideer">
+  <div class="card ideer">
     <div class="card-head"><span style="font-size:1rem">&#x1F4A1;</span><span class="card-title">Ideer</span><span class="cnt" id="cnt-ideer">0</span></div>
     <div class="entries" id="list-ideer"></div>
     <div class="add-row"><input class="add-inp" id="in-ideer" placeholder="+ tilfoej direkte..."><button class="apbtn" id="ap-ideer">-</button><button class="gobtn" id="go-ideer">+</button></div>
   </div>
-  <div class="card personlig" id="card-personlig">
+  <div class="card personlig">
     <div class="card-head"><span style="font-size:1rem">&#x1F331;</span><span class="card-title">Personlig</span><span class="cnt" id="cnt-personlig">0</span></div>
     <div class="entries" id="list-personlig"></div>
     <div class="add-row"><input class="add-inp" id="in-personlig" placeholder="+ tilfoej direkte..."><button class="apbtn" id="ap-personlig">-</button><button class="gobtn" id="go-personlig">+</button></div>
   </div>
-  <div class="card todo" id="card-todo">
+  <div class="card todo">
     <div class="card-head"><span style="font-size:1rem">&#x2705;</span><span class="card-title">To-do</span><span class="cnt" id="cnt-todo">0</span></div>
     <div class="entries" id="list-todo"></div>
     <div class="add-row"><input class="add-inp" id="in-todo" placeholder="+ tilfoej direkte..."><button class="apbtn" id="ap-todo">-</button><button class="gobtn" id="go-todo">+</button></div>
   </div>
 </div>
 <script>
-var KEYS=['arbejde','ideer','personlig','todo'];
-var TM={'#projekt':'arbejde','#opgave':'arbejde','#mode':'arbejde','#kunde':'arbejde','#ide':'ideer','#ideer':'ideer','#produkt':'ideer','#koncept':'ideer','#kreativ':'ideer','#laer':'personlig','#bog':'personlig','#maal':'personlig','#vane':'personlig','#todo':'todo','#kob':'todo','#ring':'todo','#tjek':'todo','#nu':'todo'};
-var D={arbejde:[],ideer:[],personlig:[],todo:[]};
-var CP='low';
-var AP={arbejde:'low',ideer:'low',personlig:'low',todo:'low'};
+var DB = 'https://braindump-tpixel-default-rtdb.europe-west1.firebasedatabase.app';
+var KEYS = ['arbejde','ideer','personlig','todo'];
+var TM = {'#projekt':'arbejde','#opgave':'arbejde','#mode':'arbejde','#kunde':'arbejde','#ide':'ideer','#ideer':'ideer','#produkt':'ideer','#koncept':'ideer','#kreativ':'ideer','#laer':'personlig','#bog':'personlig','#maal':'personlig','#vane':'personlig','#todo':'todo','#kob':'todo','#ring':'todo','#tjek':'todo','#nu':'todo'};
+var D = {arbejde:[],ideer:[],personlig:[],todo:[]};
+var CP = 'low';
+var AP = {arbejde:'low',ideer:'low',personlig:'low',todo:'low'};
 
-function load(){var s=localStorage.getItem('bd');if(s){try{D=JSON.parse(s);}catch(e){}}renderAll();}
-function save(){localStorage.setItem('bd',JSON.stringify(D));}
+function setSyncStatus(msg, type) {
+  var el = document.getElementById('sync-status');
+  el.textContent = msg;
+  el.className = 'sync-status ' + (type || '');
+}
+
+function fbGet() {
+  setSyncStatus('synker...','syncing');
+  return fetch(DB + '/data.json')
+    .then(function(r){ return r.json(); })
+    .then(function(data){
+      if (data) {
+        KEYS.forEach(function(k){ if (data[k]) D[k] = data[k]; });
+      }
+      renderAll();
+      setSyncStatus('synket','ok');
+      setTimeout(function(){ setSyncStatus('',''); }, 3000);
+    })
+    .catch(function(e){ setSyncStatus('offline','err'); });
+}
+
+function fbSave() {
+  setSyncStatus('gemmer...','syncing');
+  return fetch(DB + '/data.json', {
+    method: 'PUT',
+    headers: {'Content-Type':'application/json'},
+    body: JSON.stringify(D)
+  })
+  .then(function(){ setSyncStatus('gemt','ok'); setTimeout(function(){ setSyncStatus('',''); }, 2000); })
+  .catch(function(){ setSyncStatus('fejl','err'); });
+}
 
 function setPrio(p){
   CP=p;
   ['low','med','high'].forEach(function(x){
     var b=document.getElementById('pb-'+x);
-    if(b)b.className='prio-btn'+(x===p?' sel-'+x:'');
+    if(b) b.className='prio-btn'+(x===p?' sel-'+x:'');
   });
 }
 
@@ -130,7 +167,7 @@ function cycleAP(key){
   var n=c[(c.indexOf(AP[key])+1)%3];
   AP[key]=n;
   var b=document.getElementById('ap-'+key);
-  if(!b)return;
+  if(!b) return;
   b.textContent=n==='high'?'!!!':n==='med'?'!!':'-';
   b.className='apbtn'+(n==='high'?' h':n==='med'?' m':'');
 }
@@ -148,27 +185,27 @@ function routeText(txt){
 
 function quickDump(){
   var inp=document.getElementById('qi');
-  var txt=inp.value.trim();if(!txt)return;
+  var txt=inp.value.trim(); if(!txt) return;
   var prio=CP;
-  if(txt.indexOf('!!!')>=0)prio='high';
-  else if(txt.indexOf('!!')>=0)prio='med';
+  if(txt.indexOf('!!!')>=0) prio='high';
+  else if(txt.indexOf('!!')>=0) prio='med';
   var targets=routeText(txt);
   var tags=parseTags(txt);
   var clean=cleanText(txt);
   targets.forEach(function(k){
     D[k].unshift({id:Date.now()+Math.random(),date:now(),text:clean,tags:tags,prio:prio,done:false});
   });
-  sortD();save();renderAll();
+  sortD(); renderAll(); fbSave();
   inp.value='';
   setStatus('Gemt i '+targets.map(cap).join(' + '),'ok');
 }
 
 function addDirect(key){
   var inp=document.getElementById('in-'+key);
-  var txt=inp.value.trim();if(!txt)return;
+  var txt=inp.value.trim(); if(!txt) return;
   var prio=AP[key]||'low';
   D[key].unshift({id:Date.now()+Math.random(),date:now(),text:cleanText(txt),tags:parseTags(txt),prio:prio,done:false});
-  sortD();save();renderCard(key);
+  sortD(); renderCard(key); fbSave();
   inp.value='';
   setStatus('Tilfojet til '+cap(key),'ok');
 }
@@ -177,7 +214,7 @@ function sortD(){
   var o={high:0,med:1,low:2};
   KEYS.forEach(function(k){
     D[k].sort(function(a,b){
-      if(a.done!==b.done)return a.done?1:-1;
+      if(a.done!==b.done) return a.done?1:-1;
       return o[a.prio]-o[b.prio];
     });
   });
@@ -185,57 +222,48 @@ function sortD(){
 
 function toggle(key,id){
   var e=D[key].find(function(x){return x.id===id;});
-  if(e)e.done=!e.done;
-  sortD();save();renderCard(key);
+  if(e) e.done=!e.done;
+  sortD(); renderCard(key); fbSave();
 }
 
 function del(key,id){
   D[key]=D[key].filter(function(x){return x.id!==id;});
-  save();renderCard(key);
+  renderCard(key); fbSave();
 }
 
 function clearDone(){
   KEYS.forEach(function(k){D[k]=D[k].filter(function(e){return !e.done;});});
-  save();renderAll();setStatus('Ryddet','ok');
+  renderAll(); fbSave(); setStatus('Ryddet','ok');
 }
 
 function renderAll(){KEYS.forEach(renderCard);}
 
 function renderCard(key){
   var list=document.getElementById('list-'+key);
-  if(!list)return;
+  if(!list) return;
   document.getElementById('cnt-'+key).textContent=D[key].filter(function(e){return !e.done;}).length;
   if(!D[key].length){list.innerHTML='<div style="padding:16px 14px;font-size:.65rem;color:var(--muted)">Tom</div>';return;}
   list.innerHTML='';
   D[key].forEach(function(e){
     var div=document.createElement('div');
     div.className='entry'+(e.done?' done':'')+(e.prio!=='low'?' prio-'+e.prio:'');
-    
     var chk=document.createElement('div');
-    chk.className='chk';
-    chk.innerHTML=e.done?'&#x2713;':'';
+    chk.className='chk'; chk.innerHTML=e.done?'&#x2713;':'';
     chk.dataset.key=key; chk.dataset.id=e.id; chk.dataset.act='toggle';
-    
     var dot=document.createElement('div');
     dot.className='pdot '+e.prio;
-    
     var body=document.createElement('div');
     body.className='ebody';
-    
     var meta=document.createElement('div');
     meta.className='emeta';
     meta.innerHTML='<span>'+e.date+'</span>'
       +(e.prio==='high'?'<span class="plbl high">HOJ</span>':e.prio==='med'?'<span class="plbl med">MIDDEL</span>':'')
       +e.tags.map(function(t){return '<span class="etag">'+t+'</span>';}).join('');
-    
     var txt=document.createElement('div');
-    txt.className='etxt';
-    txt.textContent=e.text;
-    
+    txt.className='etxt'; txt.textContent=e.text;
     var dbtn=document.createElement('button');
     dbtn.className='dbtn'; dbtn.title='Slet'; dbtn.innerHTML='&#x2715;';
     dbtn.dataset.key=key; dbtn.dataset.id=e.id; dbtn.dataset.act='del';
-    
     body.appendChild(meta); body.appendChild(txt);
     div.appendChild(chk); div.appendChild(dot); div.appendChild(body); div.appendChild(dbtn);
     list.appendChild(div);
@@ -245,7 +273,7 @@ function renderCard(key){
 function setStatus(msg,type){
   var el=document.getElementById('st');
   el.textContent=msg; el.className='status '+(type||'');
-  if(type==='ok')setTimeout(function(){el.textContent='';el.className='status';},3000);
+  if(type==='ok') setTimeout(function(){el.textContent='';el.className='status';},3000);
 }
 function cap(s){return s.charAt(0).toUpperCase()+s.slice(1);}
 function updateClock(){
@@ -255,28 +283,30 @@ function updateClock(){
 }
 
 document.addEventListener('DOMContentLoaded',function(){
-  load(); updateClock(); setInterval(updateClock,30000);
-  
+  fbGet();
+  updateClock(); setInterval(updateClock,30000);
+  setInterval(fbGet, 30000);
+
   document.getElementById('gem-btn').addEventListener('click', quickDump);
   document.getElementById('qi').addEventListener('keydown',function(e){if(e.key==='Enter')quickDump();});
   document.getElementById('ryd-btn').addEventListener('click', clearDone);
-  
+
   ['pb-low','pb-med','pb-high'].forEach(function(id){
     document.getElementById(id).addEventListener('click',function(){setPrio(id.replace('pb-',''));});
   });
-  
+
   KEYS.forEach(function(key){
     document.getElementById('go-'+key).addEventListener('click',function(){addDirect(key);});
     document.getElementById('in-'+key).addEventListener('keydown',function(e){if(e.key==='Enter')addDirect(key);});
     document.getElementById('ap-'+key).addEventListener('click',function(){cycleAP(key);});
   });
-  
+
   document.addEventListener('click',function(e){
     var el=e.target.closest('[data-act]');
-    if(!el)return;
+    if(!el) return;
     var act=el.dataset.act, key=el.dataset.key, id=parseFloat(el.dataset.id);
-    if(act==='toggle')toggle(key,id);
-    if(act==='del')del(key,id);
+    if(act==='toggle') toggle(key,id);
+    if(act==='del') del(key,id);
   });
 });
 </script>
