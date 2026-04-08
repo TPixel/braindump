@@ -6,7 +6,7 @@
 <title>Brain Dump</title>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=Space+Mono:wght@400;700&display=swap');
-:root{--bg:#0f0f0f;--surface:#161616;--surface2:#1c1c1c;--border:#272727;--text:#e8e4dc;--muted:#555;--arbejde:#c8a96e;--ideer:#6eb5c8;--personlig:#8ec87a;--todo:#c87a8e;--prio-high:#e05555;--prio-med:#e0a955}
+:root{--bg:#0f0f0f;--surface:#161616;--surface2:#1c1c1c;--border:#272727;--text:#e8e4dc;--muted:#555;--arbejde:#c8a96e;--ideer:#6eb5c8;--personlig:#8ec87a;--todo:#c87a8e;--prio-high:#e05555;--prio-med:#e0a955;--undersog:#a87ec8}
 *{box-sizing:border-box;margin:0;padding:0}
 body{background:var(--bg);color:var(--text);font-family:'Space Mono',monospace;min-height:100vh;padding:20px;max-width:1200px;margin:0 auto}
 header{display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;padding-bottom:16px;border-bottom:1px solid var(--border)}
@@ -37,7 +37,7 @@ h1{font-family:'Syne',sans-serif;font-weight:800;font-size:1.4rem;letter-spacing
 .card.arbejde .card-head{border-left:3px solid var(--arbejde)}
 .card.ideer .card-head{border-left:3px solid var(--ideer)}
 .card.personlig .card-head{border-left:3px solid var(--personlig)}
-.card.todo .card-head{border-left:3px solid var(--todo)}
+.card.todo .card-head{border-left:3px solid var(--todo)}.card.undersog .card-head{border-left:3px solid var(--undersog)}
 .card-title{font-family:'Syne',sans-serif;font-weight:700;font-size:.8rem;letter-spacing:.08em;text-transform:uppercase;flex:1}
 .cnt{font-size:.6rem;color:var(--muted);background:var(--border);padding:2px 6px;border-radius:2px}
 .entries{flex:1;overflow-y:auto;min-height:80px;max-height:320px}
@@ -59,7 +59,7 @@ h1{font-family:'Syne',sans-serif;font-weight:800;font-size:1.4rem;letter-spacing
 .card.arbejde .etag{background:#251f10;color:var(--arbejde)}
 .card.ideer .etag{background:#101e24;color:var(--ideer)}
 .card.personlig .etag{background:#121f0f;color:var(--personlig)}
-.card.todo .etag{background:#24101a;color:var(--todo)}
+.card.todo .etag{background:#24101a;color:var(--todo)}.card.undersog .etag{background:#1e1524;color:var(--undersog)}
 .etxt{font-size:.72rem;line-height:1.5;word-break:break-word}
 .dbtn{background:none;border:none;color:#333;font-size:.7rem;cursor:pointer;padding:0 2px;margin-left:auto;flex-shrink:0;opacity:0}
 .entry:hover .dbtn{opacity:1}
@@ -112,12 +112,17 @@ h1{font-family:'Syne',sans-serif;font-weight:800;font-size:1.4rem;letter-spacing
     <div class="entries" id="list-todo"></div>
     <div class="add-row"><input class="add-inp" id="in-todo" placeholder="+ tilfoej direkte..."><button class="apbtn" id="ap-todo">-</button><button class="gobtn" id="go-todo">+</button></div>
   </div>
+  <div class="card undersog" style="grid-column:1/-1">
+    <div class="card-head"><span style="font-size:1rem">&#x1F50D;</span><span class="card-title">Claude undersøger</span><span class="cnt" id="cnt-undersog">0</span></div>
+    <div class="entries" id="list-undersog"></div>
+    <div class="add-row"><input class="add-inp" id="in-undersog" placeholder="+ skriv et spørgsmål til Claude... #research #undersog"><button class="apbtn" id="ap-undersog">-</button><button class="gobtn" id="go-undersog">+</button></div>
+  </div>
 </div>
 <script>
 var FBDB = 'https://braindump-tpixel-default-rtdb.europe-west1.firebasedatabase.app';
-var KEYS = ['arbejde','ideer','personlig','todo'];
-var TM = {'#projekt':'arbejde','#opgave':'arbejde','#mode':'arbejde','#kunde':'arbejde','#ide':'ideer','#ideer':'ideer','#produkt':'ideer','#koncept':'ideer','#kreativ':'ideer','#laer':'personlig','#bog':'personlig','#maal':'personlig','#vane':'personlig','#todo':'todo','#kob':'todo','#ring':'todo','#tjek':'todo','#nu':'todo'};
-var D = {arbejde:[],ideer:[],personlig:[],todo:[]};
+var KEYS = ['arbejde','ideer','personlig','todo','undersog'];
+var TM = {'#projekt':'arbejde','#opgave':'arbejde','#mode':'arbejde','#kunde':'arbejde','#ide':'ideer','#ideer':'ideer','#produkt':'ideer','#koncept':'ideer','#kreativ':'ideer','#laer':'personlig','#bog':'personlig','#maal':'personlig','#vane':'personlig','#todo':'todo','#kob':'todo','#ring':'todo','#tjek':'todo','#nu':'todo','#undersog':'undersog','#research':'undersog','#projektide':'undersog'};
+var D = {arbejde:[],ideer:[],personlig:[],todo:[],undersog:[]};
 var CP = 'low';
 var AP = {arbejde:'low',ideer:'low',personlig:'low',todo:'low'};
 
